@@ -3,7 +3,7 @@
 from gitcrystals import GitCrystalsCmd
 import unittest
 
-first_commit_sha='75f9ce255a19d4f4b347b679e00ebee2ad027046'
+current_commit_sha='75f9ce255a19d4f4b347b679e00ebee2ad027046'
 
 class Tests(unittest.TestCase):
 
@@ -14,6 +14,7 @@ class Tests(unittest.TestCase):
 
     def test_do_revlist(self):
         game = GitCrystalsCmd()
-        self.assertEqual(game.do_revlist(''), first_commit_sha)
+        game.do_revlist('')
+        self.assertEqual(game.output, current_commit_sha + '\n')
 
 unittest.main()
