@@ -37,4 +37,30 @@ class Tests(unittest.TestCase):
             game.do_revlist('')
             self.assertEqual(game.output, current_commit_sha + '\n')
 
+    def test_command_syntax(self):
+        commands = [['git checkout branchname', ['git','checkout','branchname']],
+                    ['git checkout branchname file filename',['git','checkout','branchname','--','filename']],
+                    ['git checkout file filename',['git','checkout','HEAD','--','filename']],
+                    ['git force checkout branchname',['git checkout -f branchname']],
+                    ['git checkout new branch branchname',['git checkout -b branchname']],
+                    ['git branch delete branchname',['git','branch','-d','branchname']],
+                    ['git force delete branchname', ['git','branch','-d', 'branchname']],
+                    ['git log short',['git','log','--oneline']],
+                    ['git log graph',['git','log','--oneline','--decorate','--graph','--all']],
+                    ['git log',['git', 'log']],
+                    ['git log diffs',['git','log','-p']],
+                    ['git diff unstaged',['git','diff']],
+                    ['git diff staged',['git', 'diff', '--cached']],
+                    ['git diff uncommitted',['git','diff','HEAD']],
+                    ['git diff unstaged branchname',['git','diff','branchname']],
+                    ['git diff staged branchname',['git', 'diff', '--cached', 'branchname']],
+                    ['git status',['git','status']],
+                    ['git merge branchname prefer current',['git','merge','branchname','--strategy=recursive','--strategy-option=ours']],
+                    ['git merge branchname prefer changes',['git','merge','branchname','--strategy=recursive','--strategy-option=theirs']]]
+
+        game = GitCrystalsCmd()
+        for command in commands:
+            game.do_git(command[0][4:])
+            self.assertListEqual(game.gitcommand, command[1])
+
 unittest.main()
