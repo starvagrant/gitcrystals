@@ -63,4 +63,23 @@ class Tests(unittest.TestCase):
             game.do_git(command[0][4:])
             self.assertListEqual(game.gitcommand, command[1])
 
+    def test_branch(self):
+        if test_clean_repo():
+            command = ['git', '--git-dir=game-repo/.git', '--work-tree=./game-repo', 'branch', 'newbranch']
+            process = subprocess.run(command)
+
+            command = ['git', '--git-dir=game-repo/.git', '--work-tree=./game-repo', 'branch']
+            process = subprocess.run(command, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output = process.stdout
+            error = process.stderr
+
+            expected = "* data\nnewbranch\n"
+
+            game = GitCrystalsCmd()
+            game.do_branch('newbranch')
+            self.assertEqual(game.output, expected)
+
+            command = ['git', '--git-dir=game-repo/.git', '--work-tree=./game-repo', 'branch','-d', 'newbranch']
+            process = subprocess.run(command)
+
 unittest.main()
