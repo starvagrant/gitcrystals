@@ -2,6 +2,8 @@
 
 import cmd
 import subprocess
+import gitconstants as G
+import command_wrapper as cw
 
 class GitCrystalsCmd(cmd.Cmd):
 
@@ -17,15 +19,15 @@ class GitCrystalsCmd(cmd.Cmd):
         return True
 
     def do_revlist(self, args):
-        command = ['git', '--git-dir=game-repo/.git', '--work-tree=./game-repo', 'rev-list', 'first-commit']
-        process = subprocess.run(command, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'rev-list', 'HEAD']
+        process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
 
     def do_branch(self, args):
         first_arg = args.split()[0] # do not allow branches with space names
-        command = ['git', '--git-dir=game-repo/.git', '--work-tree=./game-repo', 'branch', first_arg]
-        process = subprocess.run(command, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'branch', first_arg]
+        process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
 
