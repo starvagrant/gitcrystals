@@ -40,6 +40,13 @@ class GitCrystalsCmd(cmd.Cmd):
         self.output = process.stdout
         self.error = process.stderr
 
+    def do_checkout(self, args):
+        first_arg = args.split()[0]
+        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'checkout', first_arg]
+        process = cw.run_process(command)
+        self.output = process.stdout
+        self.error = process.stderr
+
 if __name__ == '__main__':
     game = GitCrystalsCmd()
     game.cmdloop()
