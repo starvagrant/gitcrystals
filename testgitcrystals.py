@@ -5,6 +5,7 @@ import unittest
 import subprocess
 
 current_commit_sha='75f9ce255a19d4f4b347b679e00ebee2ad027046'
+current_branch='data'
 
 def test_clean_repo():
     command = ['git', '--git-dir=game-repo/.git', '--work-tree=./game-repo', 'rev-list', 'HEAD']
@@ -20,6 +21,14 @@ def test_clean_repo():
     output = process.stdout
     if not output=='':
         print("Working Directory or Index Not Clean. Please clear")
+        return False
+
+    command = ['git', '--git-dir=game-repo/.git', '--work-tree=./game-repo', 'show-ref', '--heads']
+    process = subprocess.run(command, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = process.stdout
+    lines = output.split('\n')
+    if not lines[-1:]==['']: # last element will be empty string if only one ref
+        print('Unnecessary Branches, Please Delete')
         return False
 
     return True
