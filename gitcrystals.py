@@ -34,6 +34,11 @@ class GitCrystalsCmd(cmd.Cmd):
         if len(args.split()) > 1:
             print('branch names cannot have spaces ' + first_arg + ' used as branch name')
 
+    def do_listbranches(self, args):
+        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'branch']
+        process = cw.run_process(command)
+        self.output = process.stdout
+        self.error = process.stderr
 
 if __name__ == '__main__':
     game = GitCrystalsCmd()

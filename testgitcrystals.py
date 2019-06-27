@@ -64,4 +64,13 @@ class Tests(unittest.TestCase):
             expected = "* data\n  newbranch\n"
             self.assertEqual(output, expected)
 
+    def test_listbranches(self):
+        if test_clean_repo():
+
+            game = GitCrystalsCmd()
+            game.do_listbranches('')
+
+            expected = "* data\n"
+            self.assertEqual(game.output, expected)
+
 unittest.main()
