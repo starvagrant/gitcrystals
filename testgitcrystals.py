@@ -73,4 +73,40 @@ class Tests(unittest.TestCase):
             expected = "* data\n"
             self.assertEqual(game.output, expected)
 
+    def test_checkout_same_ref(self):
+        if test_clean_repo():
+
+            game = GitCrystalsCmd()
+            game.do_branch('newbranch')
+
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'checkout','newbranch']
+            process = cw.run_process(command)
+
+            game.do_checkout('newbranch')
+            game.do_listbranches('')
+            expected = "  data\n* newbranch\n"
+            actual = game.output
+
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'checkout',current_branch]
+            process = cw.run_process(command)
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'branch', '-d', 'newbranch']
+            process = cw.run_process(command)
+
+            self.assertEqual(actual, expected)
+
+    def test_checkout_file(self):
+        if test_clean_repo():
+
+            game = GitCrystalsCmd()
+            with open('game-repo/README.md', 'a') as f:
+                f.write("##Test Header")
+
+            game.do_checkoutfile('README.md')
+
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'status','--short']
+            process = cw.run_process(command)
+
+            expected = ''
+            self.assertEqual(process.stdout, expected)
+
 unittest.main()
