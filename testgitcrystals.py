@@ -94,4 +94,19 @@ class Tests(unittest.TestCase):
 
             self.assertEqual(actual, expected)
 
+    def test_checkout_file(self):
+        if test_clean_repo():
+
+            game = GitCrystalsCmd()
+            with open('game-repo/README.md', 'a') as f:
+                f.write("##Test Header")
+
+            game.do_checkoutfile('README.md')
+
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'status','--short']
+            process = cw.run_process(command)
+
+            expected = ''
+            self.assertEqual(process.stdout, expected)
+
 unittest.main()
