@@ -29,4 +29,9 @@ class Tests(unittest.TestCase):
         princess = Character(CJ.princess_json_files)
         self.assertFalse(princess.is_player)
 
+    def test_attributes(self):
+        player = Character(CJ.player_json_files)
+        self.assertTrue(player.alive)
+        self.assertEqual(player.location, "Mine Entrance")
+
 unittest.main()
