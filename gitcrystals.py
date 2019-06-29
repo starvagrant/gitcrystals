@@ -64,6 +64,21 @@ class GitCrystalsCmd(cmd.Cmd):
         self.output = process.stdout
         self.error = process.stderr
 
+    def do_go(self, args):
+        direction = args.lower()
+        if direction in ['north','south','east','west']:
+            location = self.player.location
+            new_location = self.world_map.get_direction(location, direction)
+            if new_location is not None:
+                self.player.location = new_location
+                self.player.js_location.data['location'] = new_location
+                self.player.js_location.write()
+                print("You enter " + new_location)
+            else:
+                print("There's Nothing in that Direction")
+        else:
+            print("You can only go east, west, north, or south")
+
 if __name__ == '__main__':
     game = GitCrystalsCmd()
     game.cmdloop()

@@ -5,6 +5,7 @@ import unittest
 import subprocess
 import gitconstants as G
 import command_wrapper as cw
+from jsondata import JsonData
 
 
 current_commit_sha='e3562f3142fdebdb367eb2375b002bccdbf7b713'
@@ -110,5 +111,20 @@ class Tests(unittest.TestCase):
 
             expected = ''
             self.assertEqual(process.stdout, expected)
+
+    def test_go(self):
+        if test_clean_repo():
+
+            game = GitCrystalsCmd()
+            game.do_go('west')
+            expected_location = "Git Crystal"
+            player_location = game.player.location
+            json_file = JsonData("game-repo","location")
+            file_location = json_file.data['location']
+
+            self.assertEqual(player_location, expected_location)
+            self.assertEqual(file_location, expected_location)
+
+            game.do_go('east')
 
 unittest.main()
