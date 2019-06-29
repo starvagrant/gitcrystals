@@ -8,18 +8,7 @@ class WorldMap():
         self.rooms = jsondata.JsonData(dir_name,name)
 
     def get_direction(self, location, direction):
-        """ location is current room location.
-            direction is north, south, east, west."""
-        try:
-            if location not in self.rooms.data.keys():
-                raise KeyError("Not a valid location")
-            if direction not in self.rooms.data[location].keys():
-                raise KeyError("Cannot Go " + direction)
-        except KeyError as e:
-            return e
-
-        return self.rooms.data[location][direction]
-
+        return self.rooms.data[location].get(direction, None)
 
 if __name__ == '__main__':
     world_map = WorldMap()

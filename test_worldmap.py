@@ -3,12 +3,6 @@
 import unittest
 import worldmap
 
-def return_key_error(direction):
-    try:
-        raise KeyError("Cannot Go " + direction)
-    except KeyError as e:
-        return e
-
 class Tests(unittest.TestCase):
 
     def test_get_north(self):
@@ -27,8 +21,7 @@ class Tests(unittest.TestCase):
         for key in world_map.rooms.data.keys():
             room_names.append(key)
 
-        key_error=world_map.get_direction(room_names[0], 'north')
-        expected_error = return_key_error('north')
-        self.assertEqual(repr(key_error), repr(expected_error))
+        no_room=world_map.get_direction(room_names[0], 'north')
+        self.assertIsNone(no_room)
 
 unittest.main()
