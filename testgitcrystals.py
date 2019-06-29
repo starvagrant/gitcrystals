@@ -7,7 +7,7 @@ import gitconstants as G
 import command_wrapper as cw
 
 
-current_commit_sha='20fae990138d5f1982badca86ebd252766874868'
+current_commit_sha='e3562f3142fdebdb367eb2375b002bccdbf7b713'
 current_branch='data'
 
 def test_clean_repo():
