@@ -4,6 +4,9 @@ import cmd
 import subprocess
 import gitconstants as G
 import command_wrapper as cw
+from jsondata import JsonData
+import character, worldmap
+
 
 class GitCrystalsCmd(cmd.Cmd):
 
@@ -11,6 +14,13 @@ class GitCrystalsCmd(cmd.Cmd):
         super().__init__()
         self.output = ''
         self.error = ''
+        json_files = []
+        json_files.append(JsonData("game-repo","alive"))
+        json_files.append(JsonData("game-repo","location"))
+        json_files.append(JsonData("game-repo","inventory"))
+        json_files.append(JsonData("game-repo","status"))
+        self.player = character.Character(json_files)
+        self.world_map = worldmap.WorldMap()
 
     def do_print(self, args):
         print(args)
