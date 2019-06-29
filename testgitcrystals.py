@@ -6,14 +6,15 @@ import subprocess
 import gitconstants as G
 import command_wrapper as cw
 
-current_commit_sha='75f9ce255a19d4f4b347b679e00ebee2ad027046'
+
+current_commit_sha='20fae990138d5f1982badca86ebd252766874868'
 current_branch='data'
 
 def test_clean_repo():
     command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'rev-list', 'HEAD']
     process = cw.run_process(command)
     output = process.stdout
-    if not output==current_commit_sha + '\n':
+    if not output.split('\n')[0]==current_commit_sha:
         print(output)
         print("Extra commits found in test repository, please reset")
         return False
@@ -46,7 +47,8 @@ class Tests(unittest.TestCase):
         if test_clean_repo():
             game = GitCrystalsCmd()
             game.do_revlist('')
-            self.assertEqual(game.output, current_commit_sha + '\n')
+            head_commit = game.output.split('\n')[0]
+            self.assertEqual(head_commit, current_commit_sha)
 
     def test_branch(self):
         if test_clean_repo():
