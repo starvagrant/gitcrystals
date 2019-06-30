@@ -12,16 +12,16 @@ current_commit_sha='e3562f3142fdebdb367eb2375b002bccdbf7b713'
 current_branch='data'
 
 def reset_repo():
-    command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'reset', '--hard', 'data']
+    command = [G.GIT, '-C','game-repo','reset','--hard', current_commit_sha]
     process = cw.run_process(command)
-    print("Repo Reset")
+    print(process.stdout)
 
 def test_clean_repo():
-    command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'rev-list', 'HEAD']
+    command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'rev-list', current_branch]
     process = cw.run_process(command)
     output = process.stdout
     if not output.split('\n')[0]==current_commit_sha:
-        print(output)
+        print(output.split('\n')[0])
         print("Extra commits found in test repository, please reset")
         return False
 
@@ -50,6 +50,7 @@ class Tests(unittest.TestCase):
         self.assertTrue(game.do_quit(''))
 
     def test_do_revlist(self):
+        reset_repo()
         if test_clean_repo():
             game = GitCrystalsCmd()
             game.do_revlist('')
@@ -59,6 +60,7 @@ class Tests(unittest.TestCase):
         reset_repo()
 
     def test_branch(self):
+        reset_repo()
         if test_clean_repo():
 
             game = GitCrystalsCmd()
@@ -77,6 +79,7 @@ class Tests(unittest.TestCase):
         reset_repo()
 
     def test_listbranches(self):
+        reset_repo()
         if test_clean_repo():
 
             game = GitCrystalsCmd()
@@ -88,6 +91,7 @@ class Tests(unittest.TestCase):
         reset_repo()
 
     def test_checkout_same_ref(self):
+        reset_repo()
         if test_clean_repo():
 
             game = GitCrystalsCmd()
@@ -111,6 +115,7 @@ class Tests(unittest.TestCase):
         reset_repo()
 
     def test_checkout_file(self):
+        reset_repo()
         if test_clean_repo():
 
             game = GitCrystalsCmd()
@@ -128,6 +133,7 @@ class Tests(unittest.TestCase):
         reset_repo()
 
     def test_go(self):
+        reset_repo()
         if test_clean_repo():
 
             game = GitCrystalsCmd()
@@ -145,6 +151,7 @@ class Tests(unittest.TestCase):
         reset_repo()
 
     def test_stage(self):
+        reset_repo()
         if test_clean_repo():
 
             game = GitCrystalsCmd()
@@ -164,6 +171,7 @@ class Tests(unittest.TestCase):
         reset_repo()
 
     def test_unstage(self):
+        reset_repo()
         if test_clean_repo():
 
             game = GitCrystalsCmd()
