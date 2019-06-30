@@ -38,6 +38,21 @@ class GitCrystalsCmd(cmd.Cmd):
     def display_error(self):
         print(self.error)
 
+    def format_status(self, text):
+        lines = text.split('\n')
+        status_lines = []
+        for line in lines:
+            if line.startswith('M  ',0):
+                status_lines.append(line.replace('M  ', '    staged change: '))
+            if line.startswith('M',1):
+                status_lines.append(line.replace(' M ', '    unstaged change: '))
+            if not line.startswith('M',0) and not line.startswith('M',1):
+                status_lines.append(line)
+
+        if "\n".join(status_lines) == '':
+            return("No changes since last commit\n")
+        return "\n".join(status_lines)
+
     def do_print(self, args):
         print(args)
 
@@ -114,6 +129,13 @@ class GitCrystalsCmd(cmd.Cmd):
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
+
+    def do_status(self, args):
+        command = ['git','-C', 'game-repo','status','--short']
+        process = cw.run_process(command)
+        self.output = self.format_status(process.stdout)
+        self.error = process.stderr
+        self.display_output()
 
     def do_go(self, args):
         direction = args.lower()
