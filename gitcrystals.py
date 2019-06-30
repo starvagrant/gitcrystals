@@ -85,6 +85,17 @@ class GitCrystalsCmd(cmd.Cmd):
             print("Type 1 file name exactly")
             print("Example: 'stage princess/location.json'")
 
+    def do_unstage(self, args):
+        first_arg = args.split()[0]
+        if first_arg.endswith('.json'):
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'reset','--mixed','HEAD', first_arg]
+            process = cw.run_process(command)
+            self.output = process.stdout
+            self.error = process.stderr
+        else:
+            print("Type 1 file name exactly")
+            print("Example: 'unstage princess/location.json'")
+
     def do_go(self, args):
         direction = args.lower()
         if direction in ['north','south','east','west']:

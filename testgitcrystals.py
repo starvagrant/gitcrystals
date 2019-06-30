@@ -163,10 +163,21 @@ class Tests(unittest.TestCase):
 
         reset_repo()
 
+    def test_unstage(self):
+        if test_clean_repo():
+
+            game = GitCrystalsCmd()
+            game.do_go('north')
+            game.do_stage('location.json')
+            game.do_unstage('location.json')
+
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'status','--short']
             process = cw.run_process(command)
             game.do_go('south')
 
-            expected = ' M location.json\n'
+            expected = ' M location.json\n' # location.json has unstaged changes
             self.assertEqual(process.stdout, expected)
+
+        reset_repo()
 
 unittest.main()
