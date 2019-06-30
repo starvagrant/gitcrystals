@@ -147,16 +147,24 @@ class Tests(unittest.TestCase):
     def test_stage(self):
         if test_clean_repo():
 
-            game = GitCrystalCmd()
+            game = GitCrystalsCmd()
             game.do_go('north')
             game.do_stage('location.json')
 
             command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'status','--short']
-            process = cw.run_process(command)
+            process1 = cw.run_process(command)
 
             game.do_go('south')
             command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'reset','HEAD','location.json']
+            process2 = cw.run_process(command)
+
+            expected = 'M  location.json\n' # location.json is staged
+            self.assertEqual(process1.stdout, expected)
+
+        reset_repo()
+
             process = cw.run_process(command)
+            game.do_go('south')
 
             expected = ' M location.json\n'
             self.assertEqual(process.stdout, expected)
