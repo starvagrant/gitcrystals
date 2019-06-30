@@ -5,25 +5,34 @@ import character
 from jsondata import JsonData
 from character import Character
 
+class CJ():
+    player_json_files = []
+    player_json_files.append(JsonData("game-repo","alive"))
+    player_json_files.append(JsonData("game-repo","location"))
+    player_json_files.append(JsonData("game-repo","inventory"))
+    player_json_files.append(JsonData("game-repo","status"))
+
+    princess_json_files = []
+    princess_json_files.append(JsonData("game-repo/princess","alive"))
+    princess_json_files.append(JsonData("game-repo/princess","location"))
+    princess_json_files.append(JsonData("game-repo/princess","inventory"))
+    princess_json_files.append(JsonData("game-repo/princess","status"))
+    princess_json_files.append(JsonData("game-repo/princess","relationship"))
+
 class Tests(unittest.TestCase):
 
     def test_is_player(self):
-        json_files = []
-        json_files.append(JsonData("game-repo","alive"))
-        json_files.append(JsonData("game-repo","location"))
-        json_files.append(JsonData("game-repo","inventory"))
-        json_files.append(JsonData("game-repo","status"))
-        player = Character(json_files)
+        player = Character(CJ.player_json_files)
         self.assertTrue(player.is_player)
 
     def test_is_not_player(self):
-        json_files = []
-        json_files.append(JsonData("game-repo/princess","alive"))
-        json_files.append(JsonData("game-repo/princess","location"))
-        json_files.append(JsonData("game-repo/princess","inventory"))
-        json_files.append(JsonData("game-repo/princess","status"))
-        json_files.append(JsonData("game-repo/princess","relationship"))
-        princess = Character(json_files)
+        princess = Character(CJ.princess_json_files)
         self.assertFalse(princess.is_player)
+
+    def test_attributes(self):
+        player = Character(CJ.player_json_files)
+        self.assertTrue(player.alive)
+        self.assertEqual(player.location, "Mountain Gate")
+
 
 unittest.main()

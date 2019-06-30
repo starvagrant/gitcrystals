@@ -2,31 +2,26 @@
 
 import jsondata
 
-class Data():
-    def __init__(self):
-        self.name = None
-        self.status = None
-        self.alive = None
-        self.location = None
-        self.relationship = None
-
 class Character():
 
     def __init__(self, json_files):
-        self.data = Data()
+        self.js_relationship = None
         for json_file in json_files:
             if json_file.name == "alive":
-                self.data.alive = json_file.data
+                self.js_alive = json_file
             if json_file.name == "status":
-                self.data.status = json_file.data
+                self.js_status = json_file
             if json_file.name == "inventory":
-                self.data.alive = json_file.data
+                self.js_inventory = json_file
             if json_file.name == "location":
-                self.data.alive = json_file.data
+                self.js_location = json_file
             if json_file.name == "relationship":
-               self.data.relationship = json_file.data
+                self.js_relationship = json_file
 
-        if not self.data.relationship:
+        if self.js_relationship is None:
             self.is_player = True
         else:
             self.is_player = False
+
+        self.alive = self.js_alive.data['alive']
+        self.location = self.js_location.data['location']
