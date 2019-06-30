@@ -89,6 +89,18 @@ class GitCrystalsCmd(cmd.Cmd):
         else:
             print(args + " is not a valid direction name")
 
+    def do_east(self, args):
+        self.do_go('east')
+
+    def do_west(self, args):
+        self.do_go('west')
+
+    def do_north(self, args):
+        self.do_go('north')
+
+    def do_south(self, args):
+        self.do_go('south')
+
 if __name__ == '__main__':
     game = GitCrystalsCmd()
     game.display_location()
