@@ -125,6 +125,23 @@ class Tests(unittest.TestCase):
             self.assertEqual(player_location, expected_location)
             self.assertEqual(file_location, expected_location)
 
+            game.do_go('east')
+
+    def test_stage(self):
+        if test_clean_repo():
+
+            game = GitCrystalCmd()
+            game.do_go('north')
+            game.do_stage('location.json')
+
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'status','--short']
+            process = cw.run_process(command)
+
             game.do_go('south')
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'reset','HEAD','location.json']
+            process = cw.run_process(command)
+
+            expected = ' M location.json\n'
+            self.assertEqual(process.stdout, expected)
 
 unittest.main()
