@@ -233,6 +233,11 @@ class Tests(unittest.TestCase):
             expected = "    staged change: location.json\n"
             self.assertEqual(game.output, expected)
 
+            game.do_go('north')
+            game.do_status('')
+            expected = '    unstaged change: location.json\n    staged change: location.json\n'
+            self.assertEqual(game.output, expected)
+
         reset_repo()
 
 unittest.main()

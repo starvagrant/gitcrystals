@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import cmd
+import cmd,re
 import subprocess
 import gitconstants as G
 import command_wrapper as cw
@@ -42,10 +42,10 @@ class GitCrystalsCmd(cmd.Cmd):
         lines = text.split('\n')
         status_lines = []
         for line in lines:
-            if line.startswith('M  ',0):
-                status_lines.append(line.replace('M  ', '    staged change: '))
+            if line.startswith('M',0):
+                status_lines.append(re.sub(r'^.{3}', '    staged changes: ', line))
             if line.startswith('M',1):
-                status_lines.append(line.replace(' M ', '    unstaged change: '))
+                status_lines.append(re.sub(r'^.{3}', '    unstaged changes: ', line))
             if not line.startswith('M',0) and not line.startswith('M',1):
                 status_lines.append(line)
 
