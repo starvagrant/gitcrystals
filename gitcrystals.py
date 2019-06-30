@@ -32,6 +32,12 @@ class GitCrystalsCmd(cmd.Cmd):
             print("To your east is... " + self.world_map.get_direction(location, 'east'))
             print("To your west is... " + self.world_map.get_direction(location, 'west'))
 
+    def display_output(self):
+        print(self.output)
+
+    def display_error(self):
+        print(self.error)
+
     def do_print(self, args):
         print(args)
 
