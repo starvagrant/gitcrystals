@@ -32,6 +32,7 @@ class Tests(unittest.TestCase):
     def test_attributes(self):
         player = Character(CJ.player_json_files)
         self.assertTrue(player.alive)
-        self.assertEqual(player.location, "Mine Entrance")
+        self.assertEqual(player.location, "Mountain Gate")
+
 
 unittest.main()

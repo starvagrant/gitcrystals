@@ -116,7 +116,7 @@ class Tests(unittest.TestCase):
         if test_clean_repo():
 
             game = GitCrystalsCmd()
-            game.do_go('west')
+            game.do_go('north')
             expected_location = "Git Crystal"
             player_location = game.player.location
             json_file = JsonData("game-repo","location")
@@ -125,6 +125,6 @@ class Tests(unittest.TestCase):
             self.assertEqual(player_location, expected_location)
             self.assertEqual(file_location, expected_location)
 
-            game.do_go('east')
+            game.do_go('south')
 
 unittest.main()
