@@ -20,6 +20,6 @@ class Tests(unittest.TestCase):
     def test_get_invalid_north(self):
         world_map = worldmap.WorldMap()
         no_room=world_map.get_direction(R.room_names[0], 'north')
-        self.assertIsNone(no_room)
+        self.assertEquals(no_room, '')
 
 unittest.main()

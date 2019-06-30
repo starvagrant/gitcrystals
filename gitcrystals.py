@@ -22,6 +22,16 @@ class GitCrystalsCmd(cmd.Cmd):
         self.player = character.Character(json_files)
         self.world_map = worldmap.WorldMap()
 
+    def display_location(self):
+        location = self.player.location
+        room = self.world_map.rooms.data.get(location, None)
+        if room is not None:
+            print("You are in " + location)
+            print("To your north is... " + self.world_map.get_direction(location, 'north'))
+            print("To your south is... " + self.world_map.get_direction(location, 'south'))
+            print("To your east is... " + self.world_map.get_direction(location, 'east'))
+            print("To your west is... " + self.world_map.get_direction(location, 'west'))
+
     def do_print(self, args):
         print(args)
 
@@ -69,16 +79,17 @@ class GitCrystalsCmd(cmd.Cmd):
         if direction in ['north','south','east','west']:
             location = self.player.location
             new_location = self.world_map.get_direction(location, direction)
-            if new_location is not None:
+            if new_location != '':
                 self.player.location = new_location
                 self.player.js_location.data['location'] = new_location
                 self.player.js_location.write()
-                print("You enter " + new_location)
+                self.display_location()
             else:
                 print("There's Nothing in that Direction")
         else:
-            print("You can only go east, west, north, or south")
+            print(args + " is not a valid direction name")
 
 if __name__ == '__main__':
     game = GitCrystalsCmd()
+    game.display_location()
     game.cmdloop()

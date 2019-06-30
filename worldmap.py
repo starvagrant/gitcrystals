@@ -8,7 +8,7 @@ class WorldMap():
         self.rooms = jsondata.JsonData(dir_name,name)
 
     def get_direction(self, location, direction):
-        return self.rooms.data[location].get(direction, None)
+        return self.rooms.data[location].get(direction, '')
 
 if __name__ == '__main__':
     world_map = WorldMap()
