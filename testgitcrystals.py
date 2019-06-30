@@ -188,4 +188,19 @@ class Tests(unittest.TestCase):
 
         reset_repo()
 
+    def test_commit(self):
+        reset_repo()
+        if test_clean_repo():
+
+            game = GitCrystalsCmd()
+            game.do_go('north')
+            game.do_stage('location.json')
+            game.do_commit('')
+
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'show-ref','--heads']
+            process = cw.run_process(command)
+            self.assertNotEqual(process.stdout, current_commit_sha + " refs/heads/" + current_branch + '\n')
+
+        reset_repo()
+
 unittest.main()

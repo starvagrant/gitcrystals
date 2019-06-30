@@ -96,6 +96,19 @@ class GitCrystalsCmd(cmd.Cmd):
             print("Type 1 file name exactly")
             print("Example: 'unstage princess/location.json'")
 
+    def do_commit(self, args):
+        if args == '':
+            if self.player.alive == True:
+                message = "Player is alive in " + self.player.location + "."
+            else:
+                message = "Player is dead in " + self.player.location + "."
+        else:
+            message = args
+        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'commit','-m', message]
+        process = cw.run_process(command)
+        self.output = process.stdout
+        self.error = process.stderr
+
     def do_go(self, args):
         direction = args.lower()
         if direction in ['north','south','east','west']:
