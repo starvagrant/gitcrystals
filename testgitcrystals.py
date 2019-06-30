@@ -11,6 +11,11 @@ from jsondata import JsonData
 current_commit_sha='e3562f3142fdebdb367eb2375b002bccdbf7b713'
 current_branch='data'
 
+def reset_repo():
+    command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'reset', '--hard', 'data']
+    process = cw.run_process(command)
+    print("Repo Reset")
+
 def test_clean_repo():
     command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'rev-list', 'HEAD']
     process = cw.run_process(command)
@@ -51,6 +56,8 @@ class Tests(unittest.TestCase):
             head_commit = game.output.split('\n')[0]
             self.assertEqual(head_commit, current_commit_sha)
 
+        reset_repo()
+
     def test_branch(self):
         if test_clean_repo():
 
@@ -67,6 +74,8 @@ class Tests(unittest.TestCase):
             expected = "* data\n  newbranch\n"
             self.assertEqual(output, expected)
 
+        reset_repo()
+
     def test_listbranches(self):
         if test_clean_repo():
 
@@ -75,6 +84,8 @@ class Tests(unittest.TestCase):
 
             expected = "* data\n"
             self.assertEqual(game.output, expected)
+
+        reset_repo()
 
     def test_checkout_same_ref(self):
         if test_clean_repo():
@@ -97,6 +108,8 @@ class Tests(unittest.TestCase):
 
             self.assertEqual(actual, expected)
 
+        reset_repo()
+
     def test_checkout_file(self):
         if test_clean_repo():
 
@@ -112,6 +125,8 @@ class Tests(unittest.TestCase):
             expected = ''
             self.assertEqual(process.stdout, expected)
 
+        reset_repo()
+
     def test_go(self):
         if test_clean_repo():
 
@@ -126,6 +141,8 @@ class Tests(unittest.TestCase):
             self.assertEqual(file_location, expected_location)
 
             game.do_go('east')
+
+        reset_repo()
 
     def test_stage(self):
         if test_clean_repo():
