@@ -112,7 +112,7 @@ class GitCrystalsCmd(cmd.Cmd):
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
-        self.displayoutput()
+        self.display_output()
 
     def do_checkout(self, args):
         first_arg = args.split()[0]
