@@ -206,10 +206,10 @@ class Tests(unittest.TestCase):
     def test_status_format(self):
         game = GitCrystalsCmd()
         unstaged_change = game.format_status(' M location.json\n')
-        expected = "    unstaged change: location.json\n"
+        expected = "    unstaged changes: location.json\n"
         self.assertEqual(unstaged_change, expected)
         staged_change = game.format_status('M  location.json\n')
-        expected = "    staged change: location.json\n"
+        expected = "    staged changes: location.json\n"
         self.assertEqual(staged_change, expected)
 
     def test_status(self):
@@ -225,17 +225,17 @@ class Tests(unittest.TestCase):
             game.do_go('north')
 
             game.do_status('')
-            expected = "    unstaged change: location.json\n"
+            expected = "    unstaged changes: location.json\n"
             self.assertEqual(game.output, expected)
 
             game.do_stage('location.json')
             game.do_status('')
-            expected = "    staged change: location.json\n"
+            expected = "    staged changes: location.json\n"
             self.assertEqual(game.output, expected)
 
             game.do_go('north')
             game.do_status('')
-            expected = '    unstaged change: location.json\n    staged change: location.json\n'
+            expected = '    staged changes: location.json\n    unstaged changes: location.json\n'
             self.assertEqual(game.output, expected)
 
         reset_repo()
