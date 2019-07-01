@@ -311,4 +311,35 @@ index 86b52b7..64e45dc 100644
             self.assertEqual(game.output, expected)
             reset_repo()
 
+    def test_git_diffbranch(self):
+        reset_repo()
+        if test_clean_repo():
+            game = GitCrystalsCmd()
+            game.do_branch('trial')
+            game.do_north('')
+            game.do_stage('location.json')
+            game.do_commit('')
+            game.do_diffbranch('')
+
+            expected = "only " + "data,trial are legal branch names\n"
+            expected += "usage: diffbranch branch1 branch2\n"
+            self.assertEqual(game.output, expected)
+
+            game.do_diffbranch('trial data')
+            expected = """diff --git a/location.json b/location.json
+index 86b52b7..64e45dc 100644
+--- a/location.json
++++ b/location.json
+@@ -1,4 +1,4 @@
+ {
+-    "location":"Mountain Gate"
++    "location":"Git Crystal"
+ }
+ 
+"""
+            self.assertEqual(game.output, expected)
+        reset_repo()
+        command = ['git', '-C', 'game-repo', 'branch','-D', 'trial']
+        process = cw.run_process(command)
+
 unittest.main()

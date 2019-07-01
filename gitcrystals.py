@@ -184,6 +184,36 @@ class GitCrystalsCmd(cmd.Cmd):
         self.error = process.stderr
         self.display_output()
 
+    def do_diffchanges(self, args):
+        command = ['git','-C', 'game-repo','diff', 'HEAD']
+        process = cw.run_process(command)
+        self.output = self.format_status(process.stdout)
+        self.error = process.stderr
+        self.display_output()
+
+    def do_diffbranch(self, args):
+        branches = []
+        args = args.split()
+        while(len(args) < 2):
+            args.append('')
+        command = ['git','-C', 'game-repo','show-ref', '--heads']
+        process = cw.run_process(command)
+        output = process.stdout
+        output_lines = output.split('\n')
+        if '' in output_lines:
+            output_lines.pop()
+        for line in output_lines:
+            branches.append(re.sub(r'[0-9a-f]{40} refs/heads/','', line))
+
+        if args[0] in branches and args[1] in branches:
+            command = ['git','-C', 'game-repo','diff', args[0], args[1]]
+            process = cw.run_process(command)
+            self.output = process.stdout
+        else:
+            self.output = "only " + ",".join(branches) + " are legal branch names\n"
+            self.output += "usage: diffbranch branch1 branch2\n"
+        self.display_output()
+
     def do_go(self, args):
         direction = args.lower()
         if direction in ['north','south','east','west']:
