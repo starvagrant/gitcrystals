@@ -170,6 +170,20 @@ class GitCrystalsCmd(cmd.Cmd):
         self.error = process.stderr
         self.display_output()
 
+    def do_diff(self, args):
+        command = ['git','-C', 'game-repo','diff']
+        process = cw.run_process(command)
+        self.output = self.format_status(process.stdout)
+        self.error = process.stderr
+        self.display_output()
+
+    def do_diffstaged(self, args):
+        command = ['git','-C', 'game-repo','diff', '--cached']
+        process = cw.run_process(command)
+        self.output = self.format_status(process.stdout)
+        self.error = process.stderr
+        self.display_output()
+
     def do_go(self, args):
         direction = args.lower()
         if direction in ['north','south','east','west']:

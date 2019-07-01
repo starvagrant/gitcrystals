@@ -273,4 +273,42 @@ Date:   Mon Jun 24 02:46:16 2019 -0500
 
             self.assertEqual(game.output, expected)
 
+    def test_git_diff(self):
+        reset_repo()
+        if test_clean_repo():
+            game = GitCrystalsCmd()
+
+            game.do_north('')
+            game.do_diff('')
+
+            expected = """diff --git a/location.json b/location.json
+index 86b52b7..64e45dc 100644
+--- a/location.json
++++ b/location.json
+@@ -1,4 +1,4 @@
+ {
+-    "location":"Mountain Gate"
++    "location":"Git Crystal"
+ }
+ 
+"""
+
+            self.assertEqual(game.output, expected)
+
+            game.do_stage('location.json')
+            game.do_diffstaged('')
+            expected = """diff --git a/location.json b/location.json
+index 86b52b7..64e45dc 100644
+--- a/location.json
++++ b/location.json
+@@ -1,4 +1,4 @@
+ {
+-    "location":"Mountain Gate"
++    "location":"Git Crystal"
+ }
+ 
+"""
+            self.assertEqual(game.output, expected)
+            reset_repo()
+
 unittest.main()
