@@ -240,4 +240,37 @@ class Tests(unittest.TestCase):
 
         reset_repo()
 
+    def test_git_log(self):
+        reset_repo()
+        if test_clean_repo():
+            game = GitCrystalsCmd()
+
+            game.do_log('')
+            expected="""commit e3562f3142fdebdb367eb2375b002bccdbf7b713 (HEAD -> data)
+Author: James Ginns <starvagrant@yahoo.com>
+Date:   Thu Jun 27 22:07:42 2019 -0500
+
+    Basic Game Data
+
+commit 75f9ce255a19d4f4b347b679e00ebee2ad027046 (tag: first-commit)
+Author: James Ginns <starvagrant@yahoo.com>
+Date:   Mon Jun 24 02:46:16 2019 -0500
+
+    Explain the data repository to user
+"""
+
+            self.assertEqual(game.output, expected)
+
+    def test_git_graph(self):
+        reset_repo()
+        if test_clean_repo():
+            game = GitCrystalsCmd()
+
+            game.do_graph('')
+            expected = """* e3562f3 (HEAD -> data) Basic Game Data
+* 75f9ce2 (tag: first-commit) Explain the data repository to user
+"""
+
+            self.assertEqual(game.output, expected)
+
 unittest.main()

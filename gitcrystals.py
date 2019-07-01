@@ -65,6 +65,38 @@ class GitCrystalsCmd(cmd.Cmd):
         self.output = process.stdout
         self.error = process.stderr
 
+    def do_log(self, args):
+        if args.split() != []:
+            arg = args.split()[0]
+        else:
+            arg = 4
+        try:
+            entries = int(arg)
+        except ValueError:
+            entries = 4
+        entries = '-' + str(entries)
+        command = ['git','--no-pager','-C','game-repo','log', entries, '--decorate']
+        process = cw.run_process(command)
+        self.output = process.stdout
+        self.error = process.stderr
+        print(self.output)
+
+    def do_graph(self, args):
+        if args.split() != []:
+            arg = args.split()[0]
+        else:
+            arg = 20
+        try:
+            entries = int(arg)
+        except ValueError:
+            entries = 20
+        entries = '-' + str(entries)
+        command = ['git','--no-pager','-C','game-repo','log', entries,'--oneline','--decorate','--graph','--all']
+        process = cw.run_process(command)
+        self.output = process.stdout
+        self.error = process.stderr
+        print(self.output)
+
     def do_branch(self, args):
         first_arg = args.split()[0] # do not allow branches with space names
         command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'branch', first_arg]
