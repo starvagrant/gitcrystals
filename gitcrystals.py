@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import cmd
+import cmd,re
 import subprocess
 import gitconstants as G
 import command_wrapper as cw
@@ -32,6 +32,27 @@ class GitCrystalsCmd(cmd.Cmd):
             print("To your east is... " + self.world_map.get_direction(location, 'east'))
             print("To your west is... " + self.world_map.get_direction(location, 'west'))
 
+    def display_output(self):
+        print(self.output)
+
+    def display_error(self):
+        print(self.error)
+
+    def format_status(self, text):
+        lines = text.split('\n')
+        status_lines = []
+        for line in lines:
+            if line.startswith('M',0):
+                status_lines.append(re.sub(r'^.{3}', '    staged changes: ', line))
+            if line.startswith('M',1):
+                status_lines.append(re.sub(r'^.{3}', '    unstaged changes: ', line))
+            if not line.startswith('M',0) and not line.startswith('M',1):
+                status_lines.append(line)
+
+        if "\n".join(status_lines) == '':
+            return("No changes since last commit\n")
+        return "\n".join(status_lines)
+
     def do_print(self, args):
         print(args)
 
@@ -43,6 +64,38 @@ class GitCrystalsCmd(cmd.Cmd):
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
+
+    def do_log(self, args):
+        if args.split() != []:
+            arg = args.split()[0]
+        else:
+            arg = 4
+        try:
+            entries = int(arg)
+        except ValueError:
+            entries = 4
+        entries = '-' + str(entries)
+        command = ['git','--no-pager','-C','game-repo','log', entries, '--decorate']
+        process = cw.run_process(command)
+        self.output = process.stdout
+        self.error = process.stderr
+        print(self.output)
+
+    def do_graph(self, args):
+        if args.split() != []:
+            arg = args.split()[0]
+        else:
+            arg = 20
+        try:
+            entries = int(arg)
+        except ValueError:
+            entries = 20
+        entries = '-' + str(entries)
+        command = ['git','--no-pager','-C','game-repo','log', entries,'--oneline','--decorate','--graph','--all']
+        process = cw.run_process(command)
+        self.output = process.stdout
+        self.error = process.stderr
+        print(self.output)
 
     def do_branch(self, args):
         first_arg = args.split()[0] # do not allow branches with space names
@@ -59,6 +112,7 @@ class GitCrystalsCmd(cmd.Cmd):
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
+        self.display_output()
 
     def do_checkout(self, args):
         first_arg = args.split()[0]
@@ -73,6 +127,134 @@ class GitCrystalsCmd(cmd.Cmd):
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
+
+    def do_stage(self, args):
+        first_arg = args.split()[0]
+        if first_arg.endswith('.json'):
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'add', first_arg]
+            process = cw.run_process(command)
+            self.output = process.stdout
+            self.error = process.stderr
+        else:
+            print("Type 1 file name exactly")
+            print("Example: 'stage princess/location.json'")
+
+    def do_unstage(self, args):
+        first_arg = args.split()[0]
+        if first_arg.endswith('.json'):
+            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'reset','--mixed','HEAD', first_arg]
+            process = cw.run_process(command)
+            self.output = process.stdout
+            self.error = process.stderr
+        else:
+            print("Type 1 file name exactly")
+            print("Example: 'unstage princess/location.json'")
+
+    def do_commit(self, args):
+        if args == '':
+            if self.player.alive == True:
+                message = "Player is alive in " + self.player.location + "."
+            else:
+                message = "Player is dead in " + self.player.location + "."
+        else:
+            message = args
+        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'commit','-m', message]
+        process = cw.run_process(command)
+        self.output = process.stdout
+        self.error = process.stderr
+
+    def do_status(self, args):
+        command = ['git','-C', 'game-repo','status','--short']
+        process = cw.run_process(command)
+        self.output = self.format_status(process.stdout)
+        self.error = process.stderr
+        self.display_output()
+
+    def do_diff(self, args):
+        command = ['git','-C', 'game-repo','diff']
+        process = cw.run_process(command)
+        self.output = self.format_status(process.stdout)
+        self.error = process.stderr
+        self.display_output()
+
+    def do_diffstaged(self, args):
+        command = ['git','-C', 'game-repo','diff', '--cached']
+        process = cw.run_process(command)
+        self.output = self.format_status(process.stdout)
+        self.error = process.stderr
+        self.display_output()
+
+    def do_diffchanges(self, args):
+        command = ['git','-C', 'game-repo','diff', 'HEAD']
+        process = cw.run_process(command)
+        self.output = self.format_status(process.stdout)
+        self.error = process.stderr
+        self.display_output()
+
+    def do_diffbranch(self, args):
+        branches = []
+        args = args.split()
+        while(len(args) < 2):
+            args.append('')
+        command = ['git','-C', 'game-repo','show-ref', '--heads']
+        process = cw.run_process(command)
+        output = process.stdout
+        output_lines = output.split('\n')
+        if '' in output_lines:
+            output_lines.pop()
+        for line in output_lines:
+            branches.append(re.sub(r'[0-9a-f]{40} refs/heads/','', line))
+
+        if args[0] in branches and args[1] in branches:
+            command = ['git','-C', 'game-repo','diff', args[0], args[1]]
+            process = cw.run_process(command)
+            self.output = process.stdout
+        else:
+            self.output = "only " + ",".join(branches) + " are legal branch names\n"
+            self.output += "usage: diffbranch branch1 branch2\n"
+        self.display_output()
+
+    def do_merge(self, args):
+        branches = []
+        command = ['git','-C', 'game-repo','show-ref', '--heads']
+        process = cw.run_process(command)
+        output = process.stdout
+        output_lines = output.split('\n')
+        if '' in output_lines:
+            output_lines.pop()
+        for line in output_lines:
+            branches.append(re.sub(r'[0-9a-f]{40} refs/heads/','', line))
+
+        args = args.split()
+        if len(args) == 1 and args[0] in branches:
+            command = ['git','-C', 'game-repo','merge', '--no-ff','--log','-m','merge branch ' + args[0], args[0]]
+            process = cw.run_process(command)
+            self.output = process.stdout
+            self.err = process.stderr
+        elif len(args) == 0:
+            self.output = "No branch names provided"
+        elif len(args) > 1:
+            self.output = "Git Crystals does not support merging mulitple branches"
+
+        self.display_output()
+
+    def do_resolveleft(self,args):
+        args.split()
+        for arg in args:
+            command = ['git','-C', 'game-repo','checkout', '--ours', arg]
+            process = cw.run_process(command)
+            self.output = process.stdout
+            self.err = process.stderr
+            self.display_output()
+
+    def do_resolveright(self,args):
+        args.split()
+        for arg in args:
+            command = ['git','-C', 'game-repo','checkout', '--theirs', arg]
+            process = cw.run_process(command)
+            self.output = process.stdout
+            self.err = process.stderr
+            self.display_output()
 
     def do_go(self, args):
         direction = args.lower()
