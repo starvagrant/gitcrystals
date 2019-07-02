@@ -214,6 +214,48 @@ class GitCrystalsCmd(cmd.Cmd):
             self.output += "usage: diffbranch branch1 branch2\n"
         self.display_output()
 
+    def do_merge(self, args):
+        branches = []
+        command = ['git','-C', 'game-repo','show-ref', '--heads']
+        process = cw.run_process(command)
+        output = process.stdout
+        output_lines = output.split('\n')
+        if '' in output_lines:
+            output_lines.pop()
+        for line in output_lines:
+            branches.append(re.sub(r'[0-9a-f]{40} refs/heads/','', line))
+
+        args = args.split()
+        if len(args) == 1 and args[0] in branches:
+            command = ['git','-C', 'game-repo','merge', '--no-ff','--log','-m','merge branch ' + args[0], args[0]]
+            process = cw.run_process(command)
+            self.output = process.stdout
+            self.err = process.stderr
+        elif len(args) == 0:
+            self.output = "No branch names provided"
+        elif len(args) > 1:
+            self.output = "Git Crystals does not support merging mulitple branches"
+
+        self.display_output()
+
+    def do_resolveleft(self,args):
+        args.split()
+        for arg in args:
+            command = ['git','-C', 'game-repo','checkout', '--ours', arg]
+            process = cw.run_process(command)
+            self.output = process.stdout
+            self.err = process.stderr
+            self.display_output()
+
+    def do_resolveright(self,args):
+        args.split()
+        for arg in args:
+            command = ['git','-C', 'game-repo','checkout', '--theirs', arg]
+            process = cw.run_process(command)
+            self.output = process.stdout
+            self.err = process.stderr
+            self.display_output()
+
     def do_go(self, args):
         direction = args.lower()
         if direction in ['north','south','east','west']:

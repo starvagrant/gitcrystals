@@ -358,4 +358,58 @@ index 86b52b7..64e45dc 100644
         command = ['git', '-C', 'game-repo', 'branch','-D', 'trial']
         process = cw.run_process(command)
 
+    def test_no_conflict_recursive_merge(self):
+        reset_repo()
+        if test_clean_repo():
+            game = GitCrystalsCmd()
+            game.do_merge('')
+            expected = "No branch names provided"
+            self.assertEqual(game.output, expected)
+
+            game.do_merge('octupus merge')
+            expected = "Git Crystals does not support merging mulitple branches"
+            self.assertEqual(game.output, expected)
+
+            game.do_branch('trial')
+            game.do_checkout('trial')
+            game.do_north('')
+            game.do_stage('location.json')
+            game.do_commit('')
+            game.do_checkout('data')
+            game.do_merge('trial')
+
+            command = ['git', '-C', 'game-repo', 'branch','-D', 'trial']
+            process = cw.run_process(command)
+
+            expected = """Merge made by the 'recursive' strategy.
+ location.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+"""
+            self.assertEqual(game.output, expected)
+
+    def test_merge_with_conflicts(self):
+        reset_repo()
+        if test_clean_repo():
+            game = GitCrystalsCmd()
+
+            game.do_branch('trial')
+            game.do_north('')
+            game.do_stage('location.json')
+            game.do_commit('')
+            game.do_checkout('data')
+            game.do_north('')
+            game.do_stage('location.json')
+            game.do_merge('trial')
+            game.do_resolveleft('location.json')
+            game.do_resolveright('location.json')
+            game.do_stage('location.json')
+            game.do_commit('')
+            game.do_status('') # Get status message after successful merge resolution.
+
+            command = ['git', '-C', 'game-repo', 'branch','-D', 'trial']
+            process = cw.run_process(command)
+
+            expected = 'No changes since last commit\n'
+            self.assertEqual(game.output, expected)
+
 unittest.main()
