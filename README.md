@@ -1,8 +1,25 @@
 # Git Crystals
 ## A Text Based Game Based on The git versional control program
 
+## Project State:
+Project has reached it's 0.01, or proof of concept status. This
+means I have succeeded in implementing what I consider the minimal
+feature set. I'm currently focusing my energies on getting to a 0.1 
+release, which is the fully functioning game working on my own 
+machine (Dual Booting MacOs Sierra/Ubuntu 18.04).  The 1.0 release 
+will try to support everything I can. Depending on my time / resources,
+this should include MS-Windows. 
+
+## How to contribute
+I will start considering pull requests after the release of the 0.1
+version. That's when you'll actually be able to play the game on
+select systems, and that's when I'll work on implementing a test
+suite for other users and a determining a bug reporting process.
+
+## Description
+
 The following contains a program, gitcrystals.py, the purpose of which is
-to be a text-based video game that uses git as it's system for managing
+to be a text-based video game that uses git as its system for managing
 save data. This is to serve the following purposes.
 
 1. For beginning users of git, it provides a relatively simple way to
@@ -35,16 +52,15 @@ the system. The means an unusual or unexpected git configuration might
 cause the program to not work. It will create a genuine repository to
 save your game data. It is not recommended that you use regular git
 on this repository. It may leave the repository in a state that I
-am unable to account for programatically. *IF* you become comfortable
-with the program and know what you are doing, you might exit the
-program to manually resolve a merge conflict. Internally the game
-always resolves conflicts via the 'ours' or 'theirs' strategies.
+am unable to account for programatically. Furthermore, I may institute
+a command history feature to validate games a game has been beaten
+inside the interpreter.
 
 ## How the CLI program differs from command line git
 
 1. There are a great reduction in the available commands.
 2. Some commands are aliased to emphasize what's actually
-being done. Add a change to the staging area is accomplished
+being done. Adding a change to the staging area is accomplished
 by git stage, and removing a file from the staging area is
 accomplished by git unstage.
 3. The program actually explains changes when using git diff.
