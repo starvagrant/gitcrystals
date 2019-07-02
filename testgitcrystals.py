@@ -12,9 +12,25 @@ current_commit_sha='e3562f3142fdebdb367eb2375b002bccdbf7b713'
 current_branch='data'
 
 def reset_repo():
+    command = [G.GIT, '-C','game-repo','checkout',current_branch]
+    process = cw.run_process(command)
+
     command = [G.GIT, '-C','game-repo','reset','--hard', current_commit_sha]
     process = cw.run_process(command)
-    print(process.stdout)
+
+    branches = []
+    command = [G.GIT, '-C','game-repo','--show-ref', '--heads']
+    process = cw.run_process(command)
+    output = process.stdout
+    output_lines = output.split('\n')
+    if '' in output_lines:
+        output_lines.pop()
+    for line in output_lines:
+        branches.append(re.sub(r'[0-9a-f]{40} refs/heads/','', line))
+    for branch in branches:
+        if branch != 'data':
+            command = [G.GIT, '-C','game-repo','branch','-D', branch]
+            process = cw.run_process(command)
 
 def test_clean_repo():
     command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'rev-list', current_branch]
