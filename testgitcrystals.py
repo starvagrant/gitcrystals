@@ -306,7 +306,7 @@ index 86b52b7..64e45dc 100644
 -    "location":"Mountain Gate"
 +    "location":"Git Crystal"
  }
-
+ 
 """
 
             self.assertEqual(game.output, expected)
