@@ -10,10 +10,11 @@ import character, worldmap
 
 class GitCrystalsCmd(cmd.Cmd):
 
-    def __init__(self):
+    def __init__(self, repodir="game-repo"):
         super().__init__()
         self.output = ''
         self.error = ''
+        self.repodir = repodir
         json_files = []
         json_files.append(JsonData("game-repo","alive"))
         json_files.append(JsonData("game-repo","location"))
@@ -21,6 +22,7 @@ class GitCrystalsCmd(cmd.Cmd):
         json_files.append(JsonData("game-repo","status"))
         self.player = character.Character(json_files)
         self.world_map = worldmap.WorldMap()
+
 
     def display_location(self):
         location = self.player.location
@@ -60,7 +62,7 @@ class GitCrystalsCmd(cmd.Cmd):
         return True
 
     def do_revlist(self, args):
-        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'rev-list', 'HEAD']
+        command = [G.GIT, '-C', self.repodir, 'rev-list', 'HEAD']
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
@@ -75,7 +77,7 @@ class GitCrystalsCmd(cmd.Cmd):
         except ValueError:
             entries = 4
         entries = '-' + str(entries)
-        command = ['git','--no-pager','-C','game-repo','log', entries, '--decorate']
+        command = [G.GIT,'--no-pager','-C',self.repodir,'log', entries, '--decorate']
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
@@ -91,7 +93,7 @@ class GitCrystalsCmd(cmd.Cmd):
         except ValueError:
             entries = 20
         entries = '-' + str(entries)
-        command = ['git','--no-pager','-C','game-repo','log', entries,'--oneline','--decorate','--graph','--all']
+        command = [G.GIT,'--no-pager','-C',self.repodir,'log', entries,'--oneline','--decorate','--graph','--all']
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
@@ -99,7 +101,7 @@ class GitCrystalsCmd(cmd.Cmd):
 
     def do_branch(self, args):
         first_arg = args.split()[0] # do not allow branches with space names
-        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'branch', first_arg]
+        command = [G.GIT, '-C', self.repodir, 'branch', first_arg]
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
@@ -108,7 +110,7 @@ class GitCrystalsCmd(cmd.Cmd):
             print('branch names cannot have spaces ' + first_arg + ' used as branch name')
 
     def do_listbranches(self, args):
-        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'branch']
+        command = [G.GIT, '-C', self.repodir, 'branch']
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
@@ -116,14 +118,14 @@ class GitCrystalsCmd(cmd.Cmd):
 
     def do_checkout(self, args):
         first_arg = args.split()[0]
-        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'checkout', first_arg]
+        command = [G.GIT, '-C', self.repodir, 'checkout', first_arg]
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
 
     def do_checkoutfile(self, args):
         first_arg = args.split()[0]
-        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'checkout', '--',first_arg]
+        command = [G.GIT, '-C', self.repodir, 'checkout', '--',first_arg]
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
@@ -131,7 +133,7 @@ class GitCrystalsCmd(cmd.Cmd):
     def do_stage(self, args):
         first_arg = args.split()[0]
         if first_arg.endswith('.json'):
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'add', first_arg]
+            command = [G.GIT, '-C', self.repodir, 'add', first_arg]
             process = cw.run_process(command)
             self.output = process.stdout
             self.error = process.stderr
@@ -142,7 +144,7 @@ class GitCrystalsCmd(cmd.Cmd):
     def do_unstage(self, args):
         first_arg = args.split()[0]
         if first_arg.endswith('.json'):
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'reset','--mixed','HEAD', first_arg]
+            command = [G.GIT, '-C', self.repodir, 'reset','--mixed','HEAD', first_arg]
             process = cw.run_process(command)
             self.output = process.stdout
             self.error = process.stderr
@@ -158,34 +160,34 @@ class GitCrystalsCmd(cmd.Cmd):
                 message = "Player is dead in " + self.player.location + "."
         else:
             message = args
-        command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'commit','-m', message]
+        command = [G.GIT, '-C', self.repodir, 'commit','-m', message]
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
 
     def do_status(self, args):
-        command = ['git','-C', 'game-repo','status','--short']
+        command = [G.GIT,'-C', self.repodir,'status','--short']
         process = cw.run_process(command)
         self.output = self.format_status(process.stdout)
         self.error = process.stderr
         self.display_output()
 
     def do_diff(self, args):
-        command = ['git','-C', 'game-repo','diff']
+        command = [G.GIT,'-C', self.repodir,'diff']
         process = cw.run_process(command)
         self.output = self.format_status(process.stdout)
         self.error = process.stderr
         self.display_output()
 
     def do_diffstaged(self, args):
-        command = ['git','-C', 'game-repo','diff', '--cached']
+        command = [G.GIT,'-C', self.repodir,'diff', '--cached']
         process = cw.run_process(command)
         self.output = self.format_status(process.stdout)
         self.error = process.stderr
         self.display_output()
 
     def do_diffchanges(self, args):
-        command = ['git','-C', 'game-repo','diff', 'HEAD']
+        command = [G.GIT,'-C', self.repodir,'diff', 'HEAD']
         process = cw.run_process(command)
         self.output = self.format_status(process.stdout)
         self.error = process.stderr
@@ -196,7 +198,7 @@ class GitCrystalsCmd(cmd.Cmd):
         args = args.split()
         while(len(args) < 2):
             args.append('')
-        command = ['git','-C', 'game-repo','show-ref', '--heads']
+        command = [G.GIT,'-C', self.repodir,'show-ref', '--heads']
         process = cw.run_process(command)
         output = process.stdout
         output_lines = output.split('\n')
@@ -206,7 +208,7 @@ class GitCrystalsCmd(cmd.Cmd):
             branches.append(re.sub(r'[0-9a-f]{40} refs/heads/','', line))
 
         if args[0] in branches and args[1] in branches:
-            command = ['git','-C', 'game-repo','diff', args[0], args[1]]
+            command = [G.GIT,'-C', self.repodir,'diff', args[0], args[1]]
             process = cw.run_process(command)
             self.output = process.stdout
         else:
@@ -216,7 +218,7 @@ class GitCrystalsCmd(cmd.Cmd):
 
     def do_merge(self, args):
         branches = []
-        command = ['git','-C', 'game-repo','show-ref', '--heads']
+        command = [G.GIT,'-C', self.repodir,'show-ref', '--heads']
         process = cw.run_process(command)
         output = process.stdout
         output_lines = output.split('\n')
@@ -227,7 +229,7 @@ class GitCrystalsCmd(cmd.Cmd):
 
         args = args.split()
         if len(args) == 1 and args[0] in branches:
-            command = ['git','-C', 'game-repo','merge', '--no-ff','--log','-m','merge branch ' + args[0], args[0]]
+            command = [G.GIT,'-C', self.repodir,'merge', '--no-ff','--log','-m','merge branch ' + args[0], args[0]]
             process = cw.run_process(command)
             self.output = process.stdout
             self.err = process.stderr
@@ -241,7 +243,7 @@ class GitCrystalsCmd(cmd.Cmd):
     def do_resolveleft(self,args):
         args.split()
         for arg in args:
-            command = ['git','-C', 'game-repo','checkout', '--ours', arg]
+            command = [G.GIT,'-C', self.repodir,'checkout', '--ours', arg]
             process = cw.run_process(command)
             self.output = process.stdout
             self.err = process.stderr
@@ -250,7 +252,7 @@ class GitCrystalsCmd(cmd.Cmd):
     def do_resolveright(self,args):
         args.split()
         for arg in args:
-            command = ['git','-C', 'game-repo','checkout', '--theirs', arg]
+            command = [G.GIT,'-C', self.repodir,'checkout', '--theirs', arg]
             process = cw.run_process(command)
             self.output = process.stdout
             self.err = process.stderr

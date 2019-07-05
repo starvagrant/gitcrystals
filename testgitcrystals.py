@@ -10,18 +10,20 @@ from jsondata import JsonData
 
 current_commit_sha='e3562f3142fdebdb367eb2375b002bccdbf7b713'
 current_branch='data'
+repodir="game-repo"
 
 def reset_repo():
-    command = [G.GIT, '-C','game-repo','checkout',current_branch]
+    command = [G.GIT, '-C',repodir,'checkout',current_branch]
     process = cw.run_process(command)
 
-    command = [G.GIT, '-C','game-repo','reset','--hard', current_commit_sha]
+    command = [G.GIT, '-C',repodir,'reset','--hard', current_commit_sha]
     process = cw.run_process(command)
 
     branches = []
-    command = [G.GIT, '-C','game-repo','--show-ref', '--heads']
+    command = [G.GIT, '-C',repodir,'--show-ref', '--heads']
     process = cw.run_process(command)
     output = process.stdout
+    print(output)
     output_lines = output.split('\n')
     if '' in output_lines:
         output_lines.pop()
@@ -29,11 +31,11 @@ def reset_repo():
         branches.append(re.sub(r'[0-9a-f]{40} refs/heads/','', line))
     for branch in branches:
         if branch != 'data':
-            command = [G.GIT, '-C','game-repo','branch','-D', branch]
+            command = [G.GIT, '-C',repodir,'branch','-D', branch]
             process = cw.run_process(command)
 
 def test_clean_repo():
-    command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'rev-list', current_branch]
+    command = [G.GIT, '-C', repodir, 'rev-list', current_branch]
     process = cw.run_process(command)
     output = process.stdout
     if not output.split('\n')[0]==current_commit_sha:
@@ -41,14 +43,14 @@ def test_clean_repo():
         print("Extra commits found in test repository, please reset")
         return False
 
-    command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'status', '--short']
+    command = [G.GIT, '-C', repodir, 'status', '--short']
     process = cw.run_process(command)
     output = process.stdout
     if not output=='':
         print("Working Directory or Index Not Clean. Please clear")
         return False
 
-    command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'show-ref', '--heads']
+    command = [G.GIT, '-C', repodir, 'show-ref', '--heads']
     process = cw.run_process(command)
     output = process.stdout
     lines = output.split('\n')
@@ -82,11 +84,11 @@ class Tests(unittest.TestCase):
             game = GitCrystalsCmd()
             game.do_branch('newbranch')
 
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'branch']
+            command = [G.GIT, '-C', repodir, 'branch']
             process = cw.run_process(command)
             output = process.stdout
 
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'branch', '-d', 'newbranch']
+            command = [G.GIT, '-C', repodir, 'branch', '-d', 'newbranch']
             process = cw.run_process(command)
 
             expected = "* data\n  newbranch\n"
@@ -113,7 +115,7 @@ class Tests(unittest.TestCase):
             game = GitCrystalsCmd()
             game.do_branch('newbranch')
 
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'checkout','newbranch']
+            command = [G.GIT, '-C', repodir, 'checkout','newbranch']
             process = cw.run_process(command)
 
             game.do_checkout('newbranch')
@@ -121,9 +123,9 @@ class Tests(unittest.TestCase):
             expected = "  data\n* newbranch\n"
             actual = game.output
 
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'checkout',current_branch]
+            command = [G.GIT, '-C', repodir, 'checkout',current_branch]
             process = cw.run_process(command)
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'branch', '-d', 'newbranch']
+            command = [G.GIT, '-C', repodir, 'branch', '-d', 'newbranch']
             process = cw.run_process(command)
 
             self.assertEqual(actual, expected)
@@ -140,7 +142,7 @@ class Tests(unittest.TestCase):
 
             game.do_checkoutfile('README.md')
 
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'status','--short']
+            command = [G.GIT, '-C', repodir, 'status','--short']
             process = cw.run_process(command)
 
             expected = ''
@@ -156,7 +158,7 @@ class Tests(unittest.TestCase):
             game.do_go('north')
             expected_location = "Git Crystal"
             player_location = game.player.location
-            json_file = JsonData("game-repo","location")
+            json_file = JsonData(repodir,"location")
             file_location = json_file.data['location']
 
             self.assertEqual(player_location, expected_location)
@@ -174,11 +176,11 @@ class Tests(unittest.TestCase):
             game.do_go('north')
             game.do_stage('location.json')
 
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'status','--short']
+            command = [G.GIT, '-C', repodir, 'status','--short']
             process1 = cw.run_process(command)
 
             game.do_go('south')
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'reset','HEAD','location.json']
+            command = [G.GIT, '-C', repodir, 'reset','HEAD','location.json']
             process2 = cw.run_process(command)
 
             expected = 'M  location.json\n' # location.json is staged
@@ -195,7 +197,7 @@ class Tests(unittest.TestCase):
             game.do_stage('location.json')
             game.do_unstage('location.json')
 
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'status','--short']
+            command = [G.GIT, '-C', repodir, 'status','--short']
             process = cw.run_process(command)
             game.do_go('south')
 
@@ -213,7 +215,7 @@ class Tests(unittest.TestCase):
             game.do_stage('location.json')
             game.do_commit('')
 
-            command = [G.GIT, G.GIT_DIR, G.WORK_TREE, 'show-ref','--heads']
+            command = [G.GIT, '-C', repodir, 'show-ref','--heads']
             process = cw.run_process(command)
             self.assertNotEqual(process.stdout, current_commit_sha + " refs/heads/" + current_branch + '\n')
 
@@ -378,7 +380,7 @@ index 86b52b7..64e45dc 100644
             game.do_checkout('data')
             game.do_merge('trial')
 
-            command = ['git', '-C', 'game-repo', 'branch','-D', 'trial']
+            command = [G.GIT, '-C', repodir, 'branch','-D', 'trial']
             process = cw.run_process(command)
 
             expected = """Merge made by the 'recursive' strategy.
@@ -406,7 +408,7 @@ index 86b52b7..64e45dc 100644
             game.do_commit('')
             game.do_status('') # Get status message after successful merge resolution.
 
-            command = ['git', '-C', 'game-repo', 'branch','-D', 'trial']
+            command = [G.GIT, '-C', repodir, 'branch','-D', 'trial']
             process = cw.run_process(command)
 
             expected = 'No changes since last commit\n'
