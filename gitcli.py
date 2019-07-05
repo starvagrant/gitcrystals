@@ -129,13 +129,7 @@ class GitCmd(cmd.Cmd):
             print("Example: 'unstage princess/location.json'")
 
     def do_commit(self, args):
-        if args == '':
-            if self.player.alive == True:
-                message = "Player is alive in " + self.player.location + "."
-            else:
-                message = "Player is dead in " + self.player.location + "."
-        else:
-            message = args
+        message = args
         command = [G.GIT, '-C', self.repodir, 'commit','-m', message]
         process = cw.run_process(command)
         self.output = process.stdout
