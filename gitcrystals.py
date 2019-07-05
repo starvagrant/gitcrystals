@@ -24,14 +24,18 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.world_map = worldmap.WorldMap()
 
     def display_location(self):
+        self.output = ''
         location = self.player.location
         room = self.world_map.rooms.data.get(location, None)
         if room is not None:
-            print("You are in " + location)
-            print("To your north is... " + self.world_map.get_direction(location, 'north'))
-            print("To your south is... " + self.world_map.get_direction(location, 'south'))
-            print("To your east is... " + self.world_map.get_direction(location, 'east'))
-            print("To your west is... " + self.world_map.get_direction(location, 'west'))
+            self.output += "You are in " + location + '\n'
+            self.output += "To your north is... " + self.world_map.get_direction(location, 'north') + '\n'
+            self.output += "To your south is... " + self.world_map.get_direction(location, 'south') + '\n'
+            self.output += "To your east is... " + self.world_map.get_direction(location, 'east') + '\n'
+            self.output += "To your west is... " + self.world_map.get_direction(location, 'west') + '\n'
+        else:
+            self.output += "You are not in a room on the world map. Try altering your location via git. \n"
+        self.display_output()
 
     def display_output(self):
         print(self.output)
