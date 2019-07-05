@@ -60,6 +60,11 @@ def test_clean_repo():
 
     return True
 
+def change_location_file(new_location):
+    json_file = JsonData(repodir,"location")
+    json_file.data['location'] = new_location
+    json_file.write()
+
 class Tests(unittest.TestCase):
 
     # Test game quits correctly
@@ -173,13 +178,13 @@ class Tests(unittest.TestCase):
         if test_clean_repo():
 
             game = GitCrystalsCmd()
-            game.do_go('north')
+            change_location_file("Git Crystal")
             game.do_stage('location.json')
 
             command = [G.GIT, '-C', repodir, 'status','--short']
             process1 = cw.run_process(command)
 
-            game.do_go('south')
+            change_location_file("Mountain Gate")
             command = [G.GIT, '-C', repodir, 'reset','HEAD','location.json']
             process2 = cw.run_process(command)
 
@@ -193,13 +198,13 @@ class Tests(unittest.TestCase):
         if test_clean_repo():
 
             game = GitCrystalsCmd()
-            game.do_go('north')
+            change_location_file("Git Crystal")
             game.do_stage('location.json')
             game.do_unstage('location.json')
 
             command = [G.GIT, '-C', repodir, 'status','--short']
             process = cw.run_process(command)
-            game.do_go('south')
+            change_location_file("Mountain Gate")
 
             expected = ' M location.json\n' # location.json has unstaged changes
             self.assertEqual(process.stdout, expected)
@@ -211,7 +216,7 @@ class Tests(unittest.TestCase):
         if test_clean_repo():
 
             game = GitCrystalsCmd()
-            game.do_go('north')
+            change_location_file("Git Crystal")
             game.do_stage('location.json')
             game.do_commit('')
 
@@ -240,7 +245,7 @@ class Tests(unittest.TestCase):
             expected = 'No changes since last commit\n'
             self.assertEqual(game.output, expected)
 
-            game.do_go('north')
+            change_location_file("Git Crystal")
 
             game.do_status('')
             expected = "    unstaged changes: location.json\n"
@@ -251,7 +256,7 @@ class Tests(unittest.TestCase):
             expected = "    staged changes: location.json\n"
             self.assertEqual(game.output, expected)
 
-            game.do_go('north')
+            change_location_file("Stalagmite Central")
             game.do_status('')
             expected = '    staged changes: location.json\n    unstaged changes: location.json\n'
             self.assertEqual(game.output, expected)
@@ -296,7 +301,7 @@ Date:   Mon Jun 24 02:46:16 2019 -0500
         if test_clean_repo():
             game = GitCrystalsCmd()
 
-            game.do_north('')
+            change_location_file("Git Crystal")
             game.do_diff('')
 
             expected = """diff --git a/location.json b/location.json
@@ -334,7 +339,7 @@ index 86b52b7..64e45dc 100644
         if test_clean_repo():
             game = GitCrystalsCmd()
             game.do_branch('trial')
-            game.do_north('')
+            change_location_file("Git Crystal")
             game.do_stage('location.json')
             game.do_commit('')
             game.do_diffbranch('')
@@ -374,7 +379,7 @@ index 86b52b7..64e45dc 100644
 
             game.do_branch('trial')
             game.do_checkout('trial')
-            game.do_north('')
+            change_location_file("Git Crystal")
             game.do_stage('location.json')
             game.do_commit('')
             game.do_checkout('data')
@@ -395,11 +400,11 @@ index 86b52b7..64e45dc 100644
             game = GitCrystalsCmd()
 
             game.do_branch('trial')
-            game.do_north('')
+            change_location_file("Git Crystal")
             game.do_stage('location.json')
             game.do_commit('')
             game.do_checkout('data')
-            game.do_north('')
+            change_location_file("Stalagmite Central")
             game.do_stage('location.json')
             game.do_merge('trial')
             game.do_resolveleft('location.json')
