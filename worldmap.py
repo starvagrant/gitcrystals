@@ -10,6 +10,9 @@ class WorldMap():
     def get_direction(self, location, direction):
         return self.rooms.data[location].get(direction, '')
 
+    def get_ground_items(self, location):
+        return self.rooms.data[location].get('ground', [])
+
 if __name__ == '__main__':
     world_map = WorldMap()
 
