@@ -137,7 +137,7 @@ class Tests(unittest.TestCase):
         if test_clean_repo():
 
             game = GitCrystalsCmd()
-            with open('game-repo/README.md', 'a') as f:
+            with open(repodir + '/README.md', 'a') as f:
                 f.write("##Test Header")
 
             game.do_checkoutfile('README.md')
