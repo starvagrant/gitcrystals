@@ -35,6 +35,15 @@ To your west is...
         expected = "You are not in a room on the world map. Try altering your location via git. \n"
         self.assertEqual(game.output, expected)
 
+    def test_display_ground(self):
+        game = GitCrystalsCmd()
+        game.do_north('')
+        game.display_ground()
+        expected = "In Git Crystal you see...\n    Intro Git Tutorial\n    Git Status Tutorial\n"
+        self.assertEqual(game.output, expected)
+
+        game.do_south('')
+
     def test_go(self):
         game = GitCrystalsCmd()
         game.do_go('north')

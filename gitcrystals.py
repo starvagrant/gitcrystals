@@ -37,6 +37,22 @@ class GitCrystalsCmd(gitcli.GitCmd):
             self.output += "You are not in a room on the world map. Try altering your location via git. \n"
         self.display_output()
 
+    def display_ground(self):
+        self.output = ''
+        location = self.player.location
+        room = self.world_map.rooms.data.get(location, None)
+        if room is not None:
+            ground_items = self.world_map.get_ground_items(location)
+            if ground_items == []:
+                self.output += 'The ground is empty' + '\n'
+            else:
+                self.output += 'In ' + location + ' you see...' + '\n'
+                for item in ground_items:
+                    self.output += '    ' + item + '\n'
+        else:
+            self.output = "???"
+        self.display_output()
+
     def display_output(self):
         print(self.output)
 
