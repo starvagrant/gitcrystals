@@ -2,13 +2,21 @@
 ## A Text Based Game Based on The git versional control program
 
 ## Project State:
-Project has reached it's 0.01, or proof of concept status. This
-means I have succeeded in implementing what I consider the minimal
-feature set. I'm currently focusing my energies on getting to a 0.1 
-release, which is the fully functioning game working on my own 
-machine (Dual Booting MacOs Sierra/Ubuntu 18.04).  The 1.0 release 
-will try to support everything I can. Depending on my time / resources,
-this should include MS-Windows. 
+Project has reached it's 0.01, or proof of concept status. Code
+won't work if cloned because the repo doesn't contain the
+necessary subrepository, which is sitting on my computer. Getting
+a full game setup is a goal of the 0.1 release.
+
+The 0.01 release contains all the code necessary to run git within
+a command line program. This will allow for the implementation of
+a game to uses git for saving game data. I am now implementing
+the game.
+
+The 0.1 release will definitely work on Linux, whether it gets
+tested on Mac, and to the degree it works with Mac installed
+dependencies (python 2.7) is up in the air. Windows compatiblity
+will depend on my getting access to a Windows machine, and the
+expressed interests of real Windows users.
 
 ## How to contribute
 I will start considering pull requests after the release of the 0.1
