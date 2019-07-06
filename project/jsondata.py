@@ -24,3 +24,6 @@ class JsonData(object):
                                indent=4, separators=(',',':')))
             f.write('\n\n')
             f.close()
+
+if __name__ == '__main__':
+    pass

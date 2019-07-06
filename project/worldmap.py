@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import jsondata
+from project.jsondata import JsonData
 
 class WorldMap():
 
     def __init__(self, dir_name='game-repo', name='world_rooms'):
-        self.rooms = jsondata.JsonData(dir_name,name)
+        self.rooms = JsonData(dir_name,name)
 
     def get_direction(self, location, direction):
         return self.rooms.data[location].get(direction, '')

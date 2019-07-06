@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
+from project.jsondata import JsonData
+from project.character import Character
 import unittest
-import character
-from jsondata import JsonData
-from character import Character
 
 class CJ():
     player_json_files = []
@@ -35,4 +34,5 @@ class Tests(unittest.TestCase):
         self.assertEqual(player.location, "Mountain Gate")
 
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()

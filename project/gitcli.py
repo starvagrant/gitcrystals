@@ -2,8 +2,8 @@
 
 import cmd,re
 import subprocess
-import gitconstants as G
-import command_wrapper as cw
+import project.gitconstants as G
+import project.command_wrapper as cw
 
 class GitCmd(cmd.Cmd):
 
