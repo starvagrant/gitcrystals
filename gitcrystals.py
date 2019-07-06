@@ -17,10 +17,10 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.error = ''
         self.repodir = repodir
         json_files = []
-        json_files.append(JsonData("game-repo","alive"))
-        json_files.append(JsonData("game-repo","location"))
-        json_files.append(JsonData("game-repo","inventory"))
-        json_files.append(JsonData("game-repo","status"))
+        json_files.append(JsonData(repodir,"alive"))
+        json_files.append(JsonData(repodir,"location"))
+        json_files.append(JsonData(repodir,"inventory"))
+        json_files.append(JsonData(repodir,"status"))
         self.player = character.Character(json_files)
         self.world_map = worldmap.WorldMap()
         self.characters = OrderedDict()
