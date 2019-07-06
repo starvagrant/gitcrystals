@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import jsondata
+import project.jsondata
 
 class Character():
 

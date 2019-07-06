@@ -3,11 +3,12 @@
 import cmd,re
 import subprocess
 from collections import OrderedDict
-import gitconstants as G
-import command_wrapper as cw
-from jsondata import JsonData
-import character, worldmap
-import gitcli
+import project.gitconstants as G
+import project.command_wrapper as cw
+from project.jsondata import JsonData
+from project.character import Character
+from project.worldmap import WorldMap
+import project.gitcli as gitcli
 
 class GitCrystalsCmd(gitcli.GitCmd):
 
@@ -21,8 +22,8 @@ class GitCrystalsCmd(gitcli.GitCmd):
         json_files.append(JsonData(repodir,"location"))
         json_files.append(JsonData(repodir,"inventory"))
         json_files.append(JsonData(repodir,"status"))
-        self.player = character.Character(json_files)
-        self.world_map = worldmap.WorldMap()
+        self.player = Character(json_files)
+        self.world_map = WorldMap()
         self.characters = OrderedDict()
         self.characters['princess'] = self.create_character('princess')
         self.characters['grandfather'] = self.create_character('grandfather')
@@ -37,7 +38,7 @@ class GitCrystalsCmd(gitcli.GitCmd):
         json_files.append(JsonData(data_folder,"inventory"))
         json_files.append(JsonData(data_folder,"status"))
         json_files.append(JsonData(data_folder,"relationship"))
-        return character.Character(json_files, char_name)
+        return Character(json_files, char_name)
 
     def display_location(self):
         self.output = ''

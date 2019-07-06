@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 
-import jsondata
+from project.jsondata import JsonData
 import unittest
 from collections import OrderedDict
 
 class Tests(unittest.TestCase):
 
     def test_jsondata_load(self):
-        inventory = jsondata.JsonData('game-repo','inventory')
+        inventory = JsonData('game-repo','inventory')
         expected_dict = OrderedDict(weapons=["Unarmed"],gems=["Git Gem"],items=["Distress Note"],armor=["Basic Clothes"])
         self.assertDictEqual(inventory.data, expected_dict)
 
     def test_jsondata_write(self):
-        alive = jsondata.JsonData('game-repo','alive')
+        alive = JsonData('game-repo','alive')
         alive.data['alive'] = False
         alive.write()
 
@@ -25,4 +25,5 @@ class Tests(unittest.TestCase):
 
         self.assertEqual(text, '{\n    "alive":false\n}\n\n')
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
+from project.command_wrapper import run_process
 import unittest
-import command_wrapper
 
 class test_command_wrapper(unittest.TestCase):
 
     def test_command_wrapper(self):
-        process = command_wrapper.run_process(['echo','yoyoyo'])
+        process = run_process(['echo','yoyoyo'])
         self.assertEqual(process.stdout, 'yoyoyo\n')
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()

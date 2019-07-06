@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-from gitcli import GitCmd
+from project.gitcli import GitCmd
+from project.jsondata import JsonData
+import project.gitconstants as G
+import project.command_wrapper as cw
 import unittest
 import subprocess
-import gitconstants as G
-import command_wrapper as cw
-from jsondata import JsonData
-
-
 
 current_commit_sha='01eaf9ca2ef28d87daa343e44cdca8138223ebdf'
 current_branch='data'
@@ -402,4 +400,5 @@ index 86b52b7..64e45dc 100644
             expected = 'No changes since last commit\n'
             self.assertEqual(git.output, expected)
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()

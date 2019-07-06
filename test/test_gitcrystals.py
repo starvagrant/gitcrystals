@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from gitcrystals import GitCrystalsCmd
+from project.gitcrystals import GitCrystalsCmd
+import project.gitconstants as G
+import project.command_wrapper as cw
+from project.jsondata import JsonData
+from project.character import Character
 import unittest
 import subprocess
-import gitconstants as G
-import command_wrapper as cw
-from jsondata import JsonData
-from character import Character
 
 repodir="game-repo"
 
@@ -89,4 +89,5 @@ To your west is...
 
         change_location_file("Mountain Gate")
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()
