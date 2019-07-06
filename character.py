@@ -4,8 +4,9 @@ import jsondata
 
 class Character():
 
-    def __init__(self, json_files):
+    def __init__(self, json_files, name="player"):
         self.js_relationship = None
+        self.name = name
         for json_file in json_files:
             if json_file.name == "alive":
                 self.js_alive = json_file
