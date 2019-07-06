@@ -8,7 +8,8 @@ import command_wrapper as cw
 from jsondata import JsonData
 
 
-current_commit_sha='e3562f3142fdebdb367eb2375b002bccdbf7b713'
+
+current_commit_sha='01eaf9ca2ef28d87daa343e44cdca8138223ebdf'
 current_branch='data'
 repodir="game-repo"
 
@@ -251,7 +252,8 @@ class Tests(unittest.TestCase):
             git = GitCmd()
 
             git.do_log('')
-            expected="""commit e3562f3142fdebdb367eb2375b002bccdbf7b713 (HEAD -> data)
+
+            expected="""commit 01eaf9ca2ef28d87daa343e44cdca8138223ebdf (HEAD -> data)
 Author: James Ginns <starvagrant@yahoo.com>
 Date:   Thu Jun 27 22:07:42 2019 -0500
 
@@ -270,9 +272,8 @@ Date:   Mon Jun 24 02:46:16 2019 -0500
         reset_repo()
         if test_clean_repo():
             git = GitCmd()
-
             git.do_graph('')
-            expected = """* e3562f3 (HEAD -> data) Basic Game Data
+            expected = """* 01eaf9c (HEAD -> data) Basic Game Data
 * 75f9ce2 (tag: first-commit) Explain the data repository to user
 """
 

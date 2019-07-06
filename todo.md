@@ -1,28 +1,5 @@
 ## Ideas for Refactoring Git Project
 
-1. There is no need to couple the game logic and the git
-logic. In a previous incarnation placing them in separate
-classes allowed the game to enter two states (one while
-dead, the other alive). Having the following structure
-
-    GameCli
-    GitCli
-    cmd.Cmd()
-
-will allow for simpler tests, easier implements of different
-git shells for the same game, different games that use the
-same structure, git shell, etc.
-
-2. Standardize calls to the subprocess module. I discovered
-there was a way in which all my calls to the computer's outside
-git installation worked corrected and another one that didn't.
-I need to standardize how the system's external git is called.
-I'm also interested in changing the systems I use so the game
-can be used directly from a Mac with git (i.e. python 2.7)
-While I defined support as a goal for the 1.0 release, the
-least I could do is call processes the same way on POSIX
-systems.
-
 3. Simplify end user syntax with wrapper functions. To avoid
 a small amount of work, I gave names to every function, instead
 of parsing spaces, and ended up with commands like listbranches
@@ -52,3 +29,8 @@ to test things cleaner.
 in comparison to how different the game is in general. At some point
 I'll be interested in more than saving a princess from a dragon, but
 it does give me a good point to start out with.
+
+8. Improve test suite. Ensure certain import behavior of tests is
+managed on a global (i.e. module level). This includes getting
+all test classes in a suite, and having global functions and
+constants for every test class.
