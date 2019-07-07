@@ -7,7 +7,8 @@ import project.command_wrapper as cw
 import unittest
 import subprocess
 
-current_commit_sha='308c72e1c89a05ad0c346ef46b421b2d0b5c45fd'
+
+current_commit_sha='7690400cfe54904ac5809e1765e0ba9f36e773ca'
 current_branch='data'
 repodir="game-repo"
 
@@ -251,7 +252,7 @@ class Tests(unittest.TestCase):
 
             git.do_log('')
 
-            expected="""commit 308c72e1c89a05ad0c346ef46b421b2d0b5c45fd (HEAD -> data)
+            expected="""commit 7690400cfe54904ac5809e1765e0ba9f36e773ca (HEAD -> data)
 Author: James Ginns <starvagrant@yahoo.com>
 Date:   Thu Jun 27 22:07:42 2019 -0500
 
@@ -271,7 +272,7 @@ Date:   Mon Jun 24 02:46:16 2019 -0500
         if test_clean_repo():
             git = GitCmd()
             git.do_graph('')
-            expected = """* 308c72e (HEAD -> data) Basic Game Data
+            expected = """* 7690400 (HEAD -> data) Basic Game Data
 * 75f9ce2 (tag: first-commit) Explain the data repository to user
 """
 
