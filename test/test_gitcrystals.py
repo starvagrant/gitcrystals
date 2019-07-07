@@ -119,5 +119,15 @@ To your west is...
         game.do_look('people')
         self.assertEqual(game.output, expected)
 
+    def test_do_take(self):
+        game = GitCrystalsCmd()
+        game.do_take('No Trepassing Sign')
+        expected_inventory = game.player.js_inventory.data['items']
+        self.assertListEqual(['Distress Note', 'No Trepassing Sign'], expected_inventory)
+        item = game.player.js_inventory.data['items'].pop(1)
+        game.player.js_inventory.write()
+        game.world_map.rooms.data['Mountain Gate']['ground'].append(item)
+        game.world_map.rooms.write()
+
 if __name__ == '__main__':
     unittest.main()
