@@ -124,6 +124,34 @@ class GitCrystalsCmd(gitcli.GitCmd):
     def do_south(self, args):
         self.do_go('south')
 
+    def do_take(self, args):
+        self.output = ''
+        location = self.player.location
+        ground_items = self.world_map.get_ground_items(location)
+        if args in ground_items:
+           new_item = ground_items.pop(ground_items.index(args))
+           self.player.js_inventory.data['items'].append(new_item)
+           self.player.js_inventory.write()
+           self.world_map.set_ground_items(location, ground_items)
+           self.world_map.rooms.write()
+           self.output += 'Added ' + args + ' to player inventory'
+        else:
+           self.output += 'No ' + args + ' in ' + 'location' + '\n'
+           self.output += 'Inspect ground and type name exactly' + '\n'
+        self.display_output()
+
+    def do_look(self, args):
+        if args == '':
+            self.display_location()
+            self.display_ground()
+            self.display_characters()
+        elif args.lower() == 'room':
+            self.display_location()
+        elif args.lower() == 'ground':
+            self.display_ground()
+        elif args.lower() == 'people':
+            self.display_characters()
+
 if __name__ == '__main__':
     game = GitCrystalsCmd()
     game.display_location()

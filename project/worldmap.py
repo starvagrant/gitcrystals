@@ -13,6 +13,9 @@ class WorldMap():
     def get_ground_items(self, location):
         return self.rooms.data[location].get('ground', [])
 
+    def set_ground_items(self, location, item_list):
+        self.rooms.data[location]['ground'] = item_list
+
 if __name__ == '__main__':
     world_map = WorldMap()
 
