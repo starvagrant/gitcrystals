@@ -24,30 +24,27 @@ class Tests(unittest.TestCase):
 
     def test_display_location(self):
         game = GitCrystalsCmd()
-        game.display_location()
         expected ="""You are in Mountain Gate
 To your north is... Git Crystal
 To your south is... 
 To your east is... 
 To your west is... 
 """
-        self.assertEqual(game.output, expected)
+        self.assertEqual(game.display_location(), expected)
         game.do_quit('')
 
     def test_display_wrong_location(self):
         game = GitCrystalsCmd()
         game.player.location = "Not a location"
-        game.display_location()
         expected = "You are not in a room on the world map. Try altering your location via git. \n"
-        self.assertEqual(game.output, expected)
+        self.assertEqual(game.display_location(), expected)
 
     def test_display_ground(self):
         change_location_file("Git Crystal")
 
         game = GitCrystalsCmd()
-        game.display_ground()
         expected = "In Git Crystal you see...\n    Intro Git Tutorial\n    Git Status Tutorial\n"
-        self.assertEqual(game.output, expected)
+        self.assertEqual(game.display_ground(), expected)
 
         change_location_file("Mountain Gate")
 
@@ -55,15 +52,13 @@ To your west is...
         change_location_file("Mountain Gate")
 
         game = GitCrystalsCmd()
-        game.display_characters()
         expected = 'There is no here but you\n'
-        self.assertEqual(game.output, expected)
+        self.assertEqual(game.display_characters(), expected)
 
         change_location_file("Dragon's Lair")
         game = GitCrystalsCmd()
-        game.display_characters()
         expected = "In Dragon's Lair you see...\n    princess\n    grandfather\n    dragon\n"
-        self.assertEqual(game.output, expected)
+        self.assertEqual(game.display_characters(), expected)
 
         change_location_file("Mountain Gate")
 
@@ -88,6 +83,41 @@ To your west is...
         self.assertEqual(file_location, expected_location)
 
         change_location_file("Mountain Gate")
+
+    def test_do_look(self):
+        game = GitCrystalsCmd()
+        expected = """You are in Mountain Gate
+To your north is... Git Crystal
+To your south is... 
+To your east is... 
+To your west is... 
+In Mountain Gate you see...
+    No Trepassing Sign
+There is no here but you
+"""
+        game.do_look('')
+        self.assertEqual(game.output, expected)
+
+        expected = """You are in Mountain Gate
+To your north is... Git Crystal
+To your south is... 
+To your east is... 
+To your west is... 
+"""
+        game.do_look('room')
+        self.assertEqual(game.output, expected)
+
+        expected = """In Mountain Gate you see...
+    No Trepassing Sign
+"""
+
+        game.do_look('ground')
+        self.assertEqual(game.output, expected)
+
+        expected = """There is no here but you
+"""
+        game.do_look('people')
+        self.assertEqual(game.output, expected)
 
 if __name__ == '__main__':
     unittest.main()

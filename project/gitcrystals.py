@@ -41,37 +41,37 @@ class GitCrystalsCmd(gitcli.GitCmd):
         return Character(json_files, char_name)
 
     def display_location(self):
-        self.output = ''
+        output = ''
         location = self.player.location
         room = self.world_map.rooms.data.get(location, None)
         if room is not None:
-            self.output += "You are in " + location + '\n'
-            self.output += "To your north is... " + self.world_map.get_direction(location, 'north') + '\n'
-            self.output += "To your south is... " + self.world_map.get_direction(location, 'south') + '\n'
-            self.output += "To your east is... " + self.world_map.get_direction(location, 'east') + '\n'
-            self.output += "To your west is... " + self.world_map.get_direction(location, 'west') + '\n'
+            output += "You are in " + location + '\n'
+            output += "To your north is... " + self.world_map.get_direction(location, 'north') + '\n'
+            output += "To your south is... " + self.world_map.get_direction(location, 'south') + '\n'
+            output += "To your east is... " + self.world_map.get_direction(location, 'east') + '\n'
+            output += "To your west is... " + self.world_map.get_direction(location, 'west') + '\n'
         else:
-            self.output += "You are not in a room on the world map. Try altering your location via git. \n"
-        self.display_output()
+            output += "You are not in a room on the world map. Try altering your location via git. \n"
+        return output
 
     def display_ground(self):
-        self.output = ''
+        output = ''
         location = self.player.location
         room = self.world_map.rooms.data.get(location, None)
         if room is not None:
             ground_items = self.world_map.get_ground_items(location)
             if ground_items == []:
-                self.output += 'The ground is empty' + '\n'
+                output += 'The ground is empty' + '\n'
             else:
-                self.output += 'In ' + location + ' you see...' + '\n'
+                output += 'In ' + location + ' you see...' + '\n'
                 for item in ground_items:
-                    self.output += '    ' + item + '\n'
+                    output += '    ' + item + '\n'
         else:
-            self.output = "???"
-        self.display_output()
+            output = "You are not in a room on the world map. Try altering your location via git. \n"
+        return output
 
     def display_characters(self):
-        self.output = ''
+        output = ''
         characters_output = ''
         location = self.player.location
         room = self.world_map.rooms.data.get(location, None)
@@ -80,10 +80,10 @@ class GitCrystalsCmd(gitcli.GitCmd):
                 if self.characters[key].location == location:
                     characters_output += '    ' + self.characters[key].name + '\n'
         if characters_output == '':
-            self.output = 'There is no here but you\n'
+            output = 'There is no here but you\n'
         else:
-            self.output = 'In ' + location + ' you see...\n' + characters_output
-        self.display_output()
+            output = 'In ' + location + ' you see...\n' + characters_output
+        return output
 
     def display_output(self):
         print(self.output)
@@ -141,16 +141,21 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.display_output()
 
     def do_look(self, args):
+        self.output = ''
         if args == '':
-            self.display_location()
-            self.display_ground()
-            self.display_characters()
+            self.output += self.display_location()
+            self.output += self.display_ground()
+            self.output += self.display_characters()
         elif args.lower() == 'room':
-            self.display_location()
+            self.output += self.display_location()
         elif args.lower() == 'ground':
-            self.display_ground()
+            self.output += self.display_ground()
         elif args.lower() == 'people':
-            self.display_characters()
+            self.output += self.display_characters()
+        else:
+            self.output += "Examples: 'look', 'look room', 'look ground', 'look people'"
+
+        self.display_output()
 
 if __name__ == '__main__':
     game = GitCrystalsCmd()
