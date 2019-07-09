@@ -8,7 +8,8 @@ class Tests(unittest.TestCase):
 
     def test_jsondata_load(self):
         inventory = JsonData('game-repo','inventory')
-        expected_dict = OrderedDict(armor=["Basic Clothes"],gems=["Git Gem"],items=["Distress Note"],weapons=["Unarmed"])
+        inv_list = [("Basic Clothes", 1),("Git Gem", 1),("Distress Note", 1)]
+        expected_dict = OrderedDict(inv_list)
         self.assertDictEqual(inventory.data, expected_dict)
 
     def test_jsondata_write(self):

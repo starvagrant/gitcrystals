@@ -122,12 +122,19 @@ To your west is...
     def test_do_take(self):
         game = GitCrystalsCmd()
         game.do_take('No Trepassing Sign')
-        expected_inventory = game.player.js_inventory.data['items']
-        self.assertListEqual(['Distress Note', 'No Trepassing Sign'], expected_inventory)
-        item = game.player.js_inventory.data['items'].pop(1)
-        game.player.js_inventory.write()
-        game.world_map.rooms.data['Mountain Gate']['ground'].append(item)
-        game.world_map.rooms.write()
+        inventory_list [("Basic Clothes",1),("Git Gem",1),("Distress Note",1),("No Trepassing Sign",1)]
+        actual_inventory = game.player.js_inventory.data['items']
+        expected_inventory = OrderedDict(inventory_list)
+        self.assertEqual(actual_inventory, expected_inventory)
+
+    def test_do_drop(self):
+        game = GitCrystalsCmd()
+        game.do_take('No Trepassing Sign')
+        game.do_drop('No Trepassing Sign')
+        actual_inventory = game.player.js_inventory.data['items']
+        inventory_list [("Basic Clothes",1),("Git Gem",1),("Distress Note",1)]
+        expected_inventory = OrderedDict(inventory_list)
+        self.assertEqual(actual_inventory, expected_inventory)
 
 if __name__ == '__main__':
     unittest.main()
