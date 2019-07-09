@@ -3,7 +3,7 @@
 from project.command_wrapper import run_process
 import unittest
 
-class test_command_wrapper(unittest.TestCase):
+class Tests(unittest.TestCase):
 
     def test_command_wrapper(self):
         process = run_process(['echo','yoyoyo'])
