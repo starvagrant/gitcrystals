@@ -128,16 +128,45 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.output = ''
         location = self.player.location
         ground_items = self.world_map.get_ground_items(location)
-        if args in ground_items:
-           new_item = ground_items.pop(ground_items.index(args))
-           self.player.js_inventory.data['items'].append(new_item)
-           self.player.js_inventory.write()
-           self.world_map.set_ground_items(location, ground_items)
-           self.world_map.rooms.write()
-           self.output += 'Added ' + args + ' to player inventory'
+        if args in ground_items.keys():
+            ground_items[args] -= 1
+            if args in self.player.js_inventory.data.keys():
+                self.player.js_inventory.data[args] += 1
+            else:
+                self.player.js_inventory.data[args] = 1
+            if ground_items[args] <= 0:
+                ground_items.pop(args)
+            self.player.js_inventory.write()
+            self.player.js_inventory.write()
+            self.world_map.set_ground_items(location, ground_items)
+            self.world_map.rooms.write()
+            self.output += 'Added ' + args + ' to player inventory'
         else:
-           self.output += 'No ' + args + ' in ' + 'location' + '\n'
-           self.output += 'Inspect ground and type name exactly' + '\n'
+            self.output += 'No ' + args + ' in ' + location + '\n'
+            self.output += 'Inspect ground and type name exactly' + '\n'
+        self.display_output()
+
+    def do_drop(self, args):
+        self.output = ''
+        location = self.player.location
+        ground_items = self.world_map.get_ground_items(location)
+        if args in self.player.js_inventory.data:
+            if args in ground_items:
+                ground_items[args] += 1
+            else:
+                ground_items[args] = 1
+            self.player.js_inventory.data[args] -= 1
+            if self.player.js_inventory.data[args] <= 0:
+                self.player.js_inventory.data.pop(args)
+
+            self.world_map.set_ground_items(location, ground_items)
+            self.player.js_inventory.write()
+            self.world_map.rooms.write()
+            self.output = "Dropped " + args + " in " + location + '\n'
+        else:
+            self.output = "You do not have " + args + "in your inventory" + '\n'
+            self.output = "Type 'look inventory' to see what items you have" + '\n'
+
         self.display_output()
 
     def do_look(self, args):
