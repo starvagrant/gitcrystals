@@ -20,7 +20,7 @@ class Tests(unittest.TestCase):
     def test_get_ground_items(self):
         world_map = WorldMap()
         ground_items = world_map.get_ground_items("Git Crystal")
-        inv_list = [("Intro Git Tutorial",1),("Git Status Tutorial", 1)]
+        inv_list = [("Git Status Tutorial", 1),("Intro Git Tutorial",1)]
         expected = OrderedDict(inv_list)
         self.assertDictEqual(ground_items, expected)
 

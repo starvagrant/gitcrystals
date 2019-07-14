@@ -44,7 +44,7 @@ To your west is...
         change_location_file("Git Crystal")
 
         game = GitCrystalsCmd()
-        expected = "In Git Crystal you see...\n    Intro Git Tutorial\n    Git Status Tutorial\n"
+        expected = "In Git Crystal you see...\n    Git Status Tutorial\n    Intro Git Tutorial\n"
         self.assertEqual(game.display_ground(), expected)
 
         change_location_file("Mountain Gate")
