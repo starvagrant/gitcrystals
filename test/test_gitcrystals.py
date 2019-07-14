@@ -94,7 +94,7 @@ To your south is...
 To your east is... 
 To your west is... 
 In Mountain Gate you see...
-    No Trepassing Sign
+    No Trespassing Sign
 There is no here but you
 """
         game.do_look('')
@@ -110,7 +110,7 @@ To your west is...
         self.assertEqual(game.output, expected)
 
         expected = """In Mountain Gate you see...
-    No Trepassing Sign
+    No Trespassing Sign
 """
 
         game.do_look('ground')
@@ -123,18 +123,19 @@ To your west is...
 
     def test_do_take(self):
         game = GitCrystalsCmd()
-        game.do_take('No Trepassing Sign')
-        inventory_list [("Basic Clothes",1),("Git Gem",1),("Distress Note",1),("No Trepassing Sign",1)]
-        actual_inventory = game.player.js_inventory.data['items']
+        game.do_take('No Trespassing Sign')
+        inventory_list = [("Basic Clothes",1),("Distress Note",1),("Git Gem",1),("No Trespassing Sign",1)]
+        actual_inventory = game.player.js_inventory.data
         expected_inventory = OrderedDict(inventory_list)
         self.assertEqual(actual_inventory, expected_inventory)
+        game.do_drop('No Trespassing Sign')
 
     def test_do_drop(self):
         game = GitCrystalsCmd()
-        game.do_take('No Trepassing Sign')
-        game.do_drop('No Trepassing Sign')
-        actual_inventory = game.player.js_inventory.data['items']
-        inventory_list [("Basic Clothes",1),("Git Gem",1),("Distress Note",1)]
+        game.do_take('No Trespassing Sign')
+        game.do_drop('No Trespassing Sign')
+        actual_inventory = game.player.js_inventory.data
+        inventory_list = [("Basic Clothes",1),("Distress Note",1),("Git Gem",1)]
         expected_inventory = OrderedDict(inventory_list)
         self.assertEqual(actual_inventory, expected_inventory)
 
