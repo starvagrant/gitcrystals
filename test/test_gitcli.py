@@ -2,7 +2,7 @@
 
 from project.gitcli import GitCmd
 from project.jsondata import JsonData
-import project.gitconstants as G
+import project.gitglobals as G
 import project.command_wrapper as cw
 import unittest
 import subprocess

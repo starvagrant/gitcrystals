@@ -3,7 +3,7 @@
 import cmd,re
 import subprocess
 from collections import OrderedDict
-import project.gitconstants as G
+import project.gitglobals as G
 import project.command_wrapper as cw
 from project.jsondata import JsonData
 from project.character import Character

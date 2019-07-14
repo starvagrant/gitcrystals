@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 from project.gitcrystals import GitCrystalsCmd
-import project.gitconstants as G
+import project.gitglobals as G
 import project.command_wrapper as cw
 from project.jsondata import JsonData
 from project.character import Character
 import unittest
 import subprocess
+from collections import OrderedDict
 
 repodir="game-repo"
 
