@@ -86,6 +86,7 @@ To your west is...
         change_location_file("Mountain Gate")
 
     def test_do_look(self):
+        change_location_file("Mountain Gate")
         game = GitCrystalsCmd()
         expected = """You are in Mountain Gate
 To your north is... Git Crystal
