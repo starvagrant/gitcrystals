@@ -3,7 +3,7 @@
 import cmd,re
 import subprocess
 from collections import OrderedDict
-import project.gitconstants as G
+import project.gitglobals as G
 import project.command_wrapper as cw
 from project.jsondata import JsonData
 from project.character import Character
@@ -137,7 +137,6 @@ class GitCrystalsCmd(gitcli.GitCmd):
             if ground_items[args] <= 0:
                 ground_items.pop(args)
             self.player.js_inventory.write()
-            self.player.js_inventory.write()
             self.world_map.set_ground_items(location, ground_items)
             self.world_map.rooms.write()
             self.output += 'Added ' + args + ' to player inventory'
@@ -162,10 +161,10 @@ class GitCrystalsCmd(gitcli.GitCmd):
             self.world_map.set_ground_items(location, ground_items)
             self.player.js_inventory.write()
             self.world_map.rooms.write()
-            self.output = "Dropped " + args + " in " + location + '\n'
+            self.output += "Dropped " + args + " in " + location + '\n'
         else:
-            self.output = "You do not have " + args + "in your inventory" + '\n'
-            self.output = "Type 'look inventory' to see what items you have" + '\n'
+            self.output += "You do not have " + args + "in your inventory" + '\n'
+            self.output += "Type 'look inventory' to see what items you have" + '\n'
 
         self.display_output()
 
