@@ -10,7 +10,7 @@ TEST_REPO = 'game-repo'
 
 # Test Repo Dependendencies
 
-current_commit_sha='6f3fccb8cbde6ea1b3a53c6b4b3c5798861e8079'
+current_commit_sha='15946db05563105bc391b8bcb2c8e93eaa4506bd'
 current_branch='data'
 repodir="game-repo"
 # Command Functions
