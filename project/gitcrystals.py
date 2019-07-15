@@ -3,7 +3,7 @@
 import cmd,re
 import subprocess
 from collections import OrderedDict
-import project.gitconstants as G
+import project.gitglobals as G
 import project.command_wrapper as cw
 from project.jsondata import JsonData
 from project.character import Character
@@ -17,18 +17,16 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.output = ''
         self.error = ''
         self.repodir = repodir
-        json_files = []
-        json_files.append(JsonData(repodir,"alive"))
-        json_files.append(JsonData(repodir,"location"))
-        json_files.append(JsonData(repodir,"inventory"))
-        json_files.append(JsonData(repodir,"status"))
-        self.player = Character(json_files)
-        self.world_map = WorldMap()
-        self.characters = OrderedDict()
-        self.characters['princess'] = self.create_character('princess')
-        self.characters['grandfather'] = self.create_character('grandfather')
-        self.characters['dragon'] = self.create_character('dragon')
-        self.characters['shopkeeper'] = self.create_character('shopkeeper')
+        self.load_data()
+
+    def postcmd(self, stop, line):
+        self.write_data()
+        self.load_data()
+        return stop
+
+    def do_checkoutfile(self, args):
+        super().do_checkoutfile(args)
+        self.load_data()
 
     def create_character(self, char_name):
         json_files = []
@@ -40,38 +38,65 @@ class GitCrystalsCmd(gitcli.GitCmd):
         json_files.append(JsonData(data_folder,"relationship"))
         return Character(json_files, char_name)
 
+    def load_data(self):
+        json_files = []
+        json_files.append(JsonData(self.repodir,"alive"))
+        json_files.append(JsonData(self.repodir,"location"))
+        json_files.append(JsonData(self.repodir,"inventory"))
+        json_files.append(JsonData(self.repodir,"status"))
+        self.player = Character(json_files)
+        self.world_map = WorldMap()
+        self.characters = OrderedDict()
+        self.characters['princess'] = self.create_character('princess')
+        self.characters['grandfather'] = self.create_character('grandfather')
+        self.characters['dragon'] = self.create_character('dragon')
+        self.characters['shopkeeper'] = self.create_character('shopkeeper')
+
+    def write_data(self):
+        self.player.js_alive.write()
+        self.player.js_location.write()
+        self.player.js_inventory.write()
+        self.player.js_status.write()
+        self.world_map.rooms.write()
+        for char in self.characters:
+            self.characters[char].js_alive.write()
+            self.characters[char].js_location.write()
+            self.characters[char].js_inventory.write()
+            self.characters[char].js_status.write()
+            self.characters[char].js_relationship.write()
+
     def display_location(self):
-        self.output = ''
+        output = ''
         location = self.player.location
         room = self.world_map.rooms.data.get(location, None)
         if room is not None:
-            self.output += "You are in " + location + '\n'
-            self.output += "To your north is... " + self.world_map.get_direction(location, 'north') + '\n'
-            self.output += "To your south is... " + self.world_map.get_direction(location, 'south') + '\n'
-            self.output += "To your east is... " + self.world_map.get_direction(location, 'east') + '\n'
-            self.output += "To your west is... " + self.world_map.get_direction(location, 'west') + '\n'
+            output += "You are in " + location + '\n'
+            output += "To your north is... " + self.world_map.get_direction(location, 'north') + '\n'
+            output += "To your south is... " + self.world_map.get_direction(location, 'south') + '\n'
+            output += "To your east is... " + self.world_map.get_direction(location, 'east') + '\n'
+            output += "To your west is... " + self.world_map.get_direction(location, 'west') + '\n'
         else:
-            self.output += "You are not in a room on the world map. Try altering your location via git. \n"
-        self.display_output()
+            output += "You are not in a room on the world map. Try altering your location via git. \n"
+        return output
 
     def display_ground(self):
-        self.output = ''
+        output = ''
         location = self.player.location
         room = self.world_map.rooms.data.get(location, None)
         if room is not None:
             ground_items = self.world_map.get_ground_items(location)
             if ground_items == []:
-                self.output += 'The ground is empty' + '\n'
+                output += 'The ground is empty' + '\n'
             else:
-                self.output += 'In ' + location + ' you see...' + '\n'
+                output += 'In ' + location + ' you see...' + '\n'
                 for item in ground_items:
-                    self.output += '    ' + item + '\n'
+                    output += '    ' + item + '\n'
         else:
-            self.output = "???"
-        self.display_output()
+            output = "You are not in a room on the world map. Try altering your location via git. \n"
+        return output
 
     def display_characters(self):
-        self.output = ''
+        output = ''
         characters_output = ''
         location = self.player.location
         room = self.world_map.rooms.data.get(location, None)
@@ -80,10 +105,10 @@ class GitCrystalsCmd(gitcli.GitCmd):
                 if self.characters[key].location == location:
                     characters_output += '    ' + self.characters[key].name + '\n'
         if characters_output == '':
-            self.output = 'There is no here but you\n'
+            output = 'There is no here but you\n'
         else:
-            self.output = 'In ' + location + ' you see...\n' + characters_output
-        self.display_output()
+            output = 'In ' + location + ' you see...\n' + characters_output
+        return output
 
     def display_output(self):
         print(self.output)
@@ -123,6 +148,67 @@ class GitCrystalsCmd(gitcli.GitCmd):
 
     def do_south(self, args):
         self.do_go('south')
+
+    def do_take(self, args):
+        self.output = ''
+        location = self.player.location
+        ground_items = self.world_map.get_ground_items(location)
+        if args in ground_items.keys():
+            ground_items[args] -= 1
+            if args in self.player.js_inventory.data.keys():
+                self.player.js_inventory.data[args] += 1
+            else:
+                self.player.js_inventory.data[args] = 1
+            if ground_items[args] <= 0:
+                ground_items.pop(args)
+            self.player.js_inventory.write()
+            self.world_map.set_ground_items(location, ground_items)
+            self.world_map.rooms.write()
+            self.output += 'Added ' + args + ' to player inventory'
+        else:
+            self.output += 'No ' + args + ' in ' + location + '\n'
+            self.output += 'Inspect ground and type name exactly' + '\n'
+        self.display_output()
+
+    def do_drop(self, args):
+        self.output = ''
+        location = self.player.location
+        ground_items = self.world_map.get_ground_items(location)
+        if args in self.player.js_inventory.data:
+            if args in ground_items:
+                ground_items[args] += 1
+            else:
+                ground_items[args] = 1
+            self.player.js_inventory.data[args] -= 1
+            if self.player.js_inventory.data[args] <= 0:
+                self.player.js_inventory.data.pop(args)
+
+            self.world_map.set_ground_items(location, ground_items)
+            self.player.js_inventory.write()
+            self.world_map.rooms.write()
+            self.output += "Dropped " + args + " in " + location + '\n'
+        else:
+            self.output += "You do not have " + args + "in your inventory" + '\n'
+            self.output += "Type 'look inventory' to see what items you have" + '\n'
+
+        self.display_output()
+
+    def do_look(self, args):
+        self.output = ''
+        if args == '':
+            self.output += self.display_location()
+            self.output += self.display_ground()
+            self.output += self.display_characters()
+        elif args.lower() == 'room':
+            self.output += self.display_location()
+        elif args.lower() == 'ground':
+            self.output += self.display_ground()
+        elif args.lower() == 'people':
+            self.output += self.display_characters()
+        else:
+            self.output += "Examples: 'look', 'look room', 'look ground', 'look people'"
+
+        self.display_output()
 
 if __name__ == '__main__':
     game = GitCrystalsCmd()

@@ -2,69 +2,18 @@
 
 from project.gitcli import GitCmd
 from project.jsondata import JsonData
-import project.gitconstants as G
+import project.gitglobals as G
 import project.command_wrapper as cw
 import unittest
 import subprocess
 
-current_commit_sha='308c72e1c89a05ad0c346ef46b421b2d0b5c45fd'
-current_branch='data'
-repodir="game-repo"
-
-def reset_repo():
-    command = [G.GIT, '-C',repodir,'checkout',current_branch]
-    process = cw.run_process(command)
-
-    command = [G.GIT, '-C',repodir,'reset','--hard', current_commit_sha]
-    process = cw.run_process(command)
-
-    branches = []
-    command = [G.GIT, '-C',repodir,'--show-ref', '--heads']
-    process = cw.run_process(command)
-    output = process.stdout
-    print(output)
-    output_lines = output.split('\n')
-    if '' in output_lines:
-        output_lines.pop()
-    for line in output_lines:
-        branches.append(re.sub(r'[0-9a-f]{40} refs/heads/','', line))
-    for branch in branches:
-        if branch != 'data':
-            command = [G.GIT, '-C',repodir,'branch','-D', branch]
-            process = cw.run_process(command)
-
-def test_clean_repo():
-    command = [G.GIT, '-C', repodir, 'rev-list', current_branch]
-    process = cw.run_process(command)
-    output = process.stdout
-    if not output.split('\n')[0]==current_commit_sha:
-        print(output.split('\n')[0])
-        print("Extra commits found in test repository, please reset")
-        return False
-
-    command = [G.GIT, '-C', repodir, 'status', '--short']
-    process = cw.run_process(command)
-    output = process.stdout
-    if not output=='':
-        print("Working Directory or Index Not Clean. Please clear")
-        return False
-
-    command = [G.GIT, '-C', repodir, 'show-ref', '--heads']
-    process = cw.run_process(command)
-    output = process.stdout
-    lines = output.split('\n')
-    if not lines[-1:]==['']: # last element will be empty string if only one ref
-        print('Unnecessary Branches, Please Delete')
-        return False
-
-    return True
-
-def change_location_file(new_location):
-    json_file = JsonData(repodir,"location")
-    json_file.data['location'] = new_location
-    json_file.write()
-
 class Tests(unittest.TestCase):
+    def setUp(self):
+        G.reset_repo()
+        G.test_clean_repo()
+
+    def tearDown(self):
+        G.reset_repo()
 
     # Test game quits correctly
     def test_do_quit(self):
@@ -72,140 +21,101 @@ class Tests(unittest.TestCase):
         self.assertTrue(git.do_quit(''))
 
     def test_do_revlist(self):
-        reset_repo()
-        if test_clean_repo():
-            git = GitCmd()
-            git.do_revlist('')
-            head_commit = git.output.split('\n')[0]
-            self.assertEqual(head_commit, current_commit_sha)
-
-        reset_repo()
+        git = GitCmd()
+        git.do_revlist('')
+        head_commit = git.output.split('\n')[0]
+        self.assertEqual(head_commit, G.current_commit_sha)
 
     def test_branch(self):
-        reset_repo()
-        if test_clean_repo():
+        git = GitCmd()
+        git.do_branch('newbranch')
 
-            git = GitCmd()
-            git.do_branch('newbranch')
+        command = [G.GIT, '-C', G.repodir, 'branch']
+        process = cw.run_process(command)
+        output = process.stdout
 
-            command = [G.GIT, '-C', repodir, 'branch']
-            process = cw.run_process(command)
-            output = process.stdout
+        command = [G.GIT, '-C', G.repodir, 'branch', '-D', 'newbranch']
+        process = cw.run_process(command)
 
-            command = [G.GIT, '-C', repodir, 'branch', '-D', 'newbranch']
-            process = cw.run_process(command)
-
-            expected = "* data\n  newbranch\n"
-            self.assertEqual(output, expected)
-
-        reset_repo()
+        expected = "* data\n  newbranch\n"
+        self.assertEqual(output, expected)
 
     def test_listbranches(self):
-        reset_repo()
-        if test_clean_repo():
+        git = GitCmd()
+        git.do_listbranches('')
 
-            git = GitCmd()
-            git.do_listbranches('')
-
-            expected = "* data\n"
-            self.assertEqual(git.output, expected)
-
-        reset_repo()
+        expected = "* data\n"
+        self.assertEqual(git.output, expected)
 
     def test_checkout_same_ref(self):
-        reset_repo()
-        if test_clean_repo():
+        git = GitCmd()
+        git.do_branch('newbranch')
 
-            git = GitCmd()
-            git.do_branch('newbranch')
+        command = [G.GIT, '-C', G.repodir, 'checkout','newbranch']
+        process = cw.run_process(command)
 
-            command = [G.GIT, '-C', repodir, 'checkout','newbranch']
-            process = cw.run_process(command)
+        git.do_checkout('newbranch')
+        git.do_listbranches('')
+        expected = "  data\n* newbranch\n"
+        actual = git.output
 
-            git.do_checkout('newbranch')
-            git.do_listbranches('')
-            expected = "  data\n* newbranch\n"
-            actual = git.output
+        command = [G.GIT, '-C', G.repodir, 'checkout',G.current_branch]
+        process = cw.run_process(command)
+        command = [G.GIT, '-C', G.repodir, 'branch', '-d', 'newbranch']
+        process = cw.run_process(command)
 
-            command = [G.GIT, '-C', repodir, 'checkout',current_branch]
-            process = cw.run_process(command)
-            command = [G.GIT, '-C', repodir, 'branch', '-d', 'newbranch']
-            process = cw.run_process(command)
-
-            self.assertEqual(actual, expected)
-
-        reset_repo()
+        self.assertEqual(actual, expected)
 
     def test_checkout_file(self):
-        reset_repo()
-        if test_clean_repo():
+        git = GitCmd()
+        with open(G.repodir + '/README.md', 'a') as f:
+            f.write("##Test Header")
 
-            git = GitCmd()
-            with open(repodir + '/README.md', 'a') as f:
-                f.write("##Test Header")
+        git.do_checkoutfile('README.md')
 
-            git.do_checkoutfile('README.md')
+        command = [G.GIT, '-C', G.repodir, 'status','--short']
+        process = cw.run_process(command)
 
-            command = [G.GIT, '-C', repodir, 'status','--short']
-            process = cw.run_process(command)
-
-            expected = ''
-            self.assertEqual(process.stdout, expected)
-
-        reset_repo()
+        expected = ''
+        self.assertEqual(process.stdout, expected)
 
     def test_stage(self):
-        reset_repo()
-        if test_clean_repo():
+        git = GitCmd()
+        G.change_location_file("Git Crystal")
+        git.do_stage('location.json')
 
-            git = GitCmd()
-            change_location_file("Git Crystal")
-            git.do_stage('location.json')
+        command = [G.GIT, '-C', G.repodir, 'status','--short']
+        process1 = cw.run_process(command)
 
-            command = [G.GIT, '-C', repodir, 'status','--short']
-            process1 = cw.run_process(command)
+        G.change_location_file("Mountain Gate")
+        command = [G.GIT, '-C', G.repodir, 'reset','HEAD','location.json']
+        process2 = cw.run_process(command)
 
-            change_location_file("Mountain Gate")
-            command = [G.GIT, '-C', repodir, 'reset','HEAD','location.json']
-            process2 = cw.run_process(command)
-
-            expected = 'M  location.json\n' # location.json is staged
-            self.assertEqual(process1.stdout, expected)
-
-        reset_repo()
+        expected = 'M  location.json\n' # location.json is staged
+        self.assertEqual(process1.stdout, expected)
 
     def test_unstage(self):
-        reset_repo()
-        if test_clean_repo():
+        git = GitCmd()
+        G.change_location_file("Git Crystal")
+        git.do_stage('location.json')
+        git.do_unstage('location.json')
 
-            git = GitCmd()
-            change_location_file("Git Crystal")
-            git.do_stage('location.json')
-            git.do_unstage('location.json')
+        command = [G.GIT, '-C', G.repodir, 'status','--short']
+        process = cw.run_process(command)
+        G.change_location_file("Mountain Gate")
 
-            command = [G.GIT, '-C', repodir, 'status','--short']
-            process = cw.run_process(command)
-            change_location_file("Mountain Gate")
-
-            expected = ' M location.json\n' # location.json has unstaged changes
-            self.assertEqual(process.stdout, expected)
-
-        reset_repo()
+        expected = ' M location.json\n' # location.json has unstaged changes
+        self.assertEqual(process.stdout, expected)
 
     def test_commit(self):
-        reset_repo()
-        if test_clean_repo():
+        git = GitCmd()
+        G.change_location_file("Git Crystal")
+        git.do_stage('location.json')
+        git.do_commit('Player in Git Crystal')
 
-            git = GitCmd()
-            change_location_file("Git Crystal")
-            git.do_stage('location.json')
-            git.do_commit('Player in Git Crystal')
-
-            command = [G.GIT, '-C', repodir, 'show-ref','--heads']
-            process = cw.run_process(command)
-            self.assertNotEqual(process.stdout, current_commit_sha + " refs/heads/" + current_branch + '\n')
-
-        reset_repo()
+        command = [G.GIT, '-C', G.repodir, 'show-ref','--heads']
+        process = cw.run_process(command)
+        self.assertNotEqual(process.stdout, G.current_commit_sha + " refs/heads/" + G.current_branch + '\n')
 
     def test_status_format(self):
         git = GitCmd()
@@ -217,41 +127,33 @@ class Tests(unittest.TestCase):
         self.assertEqual(staged_change, expected)
 
     def test_status(self):
-        reset_repo()
-        if test_clean_repo():
-            git = GitCmd()
+        git = GitCmd()
+        git.do_status('')
 
-            git.do_status('')
+        expected = 'No changes since last commit\n'
+        self.assertEqual(git.output, expected)
 
-            expected = 'No changes since last commit\n'
-            self.assertEqual(git.output, expected)
+        G.change_location_file("Git Crystal")
 
-            change_location_file("Git Crystal")
+        git.do_status('')
+        expected = "    unstaged changes: location.json\n"
+        self.assertEqual(git.output, expected)
 
-            git.do_status('')
-            expected = "    unstaged changes: location.json\n"
-            self.assertEqual(git.output, expected)
+        git.do_stage('location.json')
+        git.do_status('')
+        expected = "    staged changes: location.json\n"
+        self.assertEqual(git.output, expected)
 
-            git.do_stage('location.json')
-            git.do_status('')
-            expected = "    staged changes: location.json\n"
-            self.assertEqual(git.output, expected)
-
-            change_location_file("Stalagmite Central")
-            git.do_status('')
-            expected = '    staged changes: location.json\n    unstaged changes: location.json\n'
-            self.assertEqual(git.output, expected)
-
-        reset_repo()
+        G.change_location_file("Stalagmite Central")
+        git.do_status('')
+        expected = '    staged changes: location.json\n    unstaged changes: location.json\n'
+        self.assertEqual(git.output, expected)
 
     def test_git_log(self):
-        reset_repo()
-        if test_clean_repo():
-            git = GitCmd()
+        git = GitCmd()
+        git.do_log('')
 
-            git.do_log('')
-
-            expected="""commit 308c72e1c89a05ad0c346ef46b421b2d0b5c45fd (HEAD -> data)
+        expected="""commit {} (HEAD -> data)
 Author: James Ginns <starvagrant@yahoo.com>
 Date:   Thu Jun 27 22:07:42 2019 -0500
 
@@ -262,30 +164,26 @@ Author: James Ginns <starvagrant@yahoo.com>
 Date:   Mon Jun 24 02:46:16 2019 -0500
 
     Explain the data repository to user
-"""
+""".format(G.current_commit_sha)
 
-            self.assertEqual(git.output, expected)
+        self.assertEqual(git.output, expected)
 
     def test_git_graph(self):
-        reset_repo()
-        if test_clean_repo():
-            git = GitCmd()
-            git.do_graph('')
-            expected = """* 308c72e (HEAD -> data) Basic Game Data
+        git = GitCmd()
+        git.do_graph('')
+        expected = """* {} (HEAD -> data) Basic Game Data
 * 75f9ce2 (tag: first-commit) Explain the data repository to user
-"""
+""".format(G.current_commit_sha[:7])
 
-            self.assertEqual(git.output, expected)
+        self.assertEqual(git.output, expected)
 
     def test_git_diff(self):
-        reset_repo()
-        if test_clean_repo():
-            git = GitCmd()
+        git = GitCmd()
 
-            change_location_file("Git Crystal")
-            git.do_diff('')
+        G.change_location_file("Git Crystal")
+        git.do_diff('')
 
-            expected = """diff --git a/location.json b/location.json
+        expected = """diff --git a/location.json b/location.json
 index 86b52b7..64e45dc 100644
 --- a/location.json
 +++ b/location.json
@@ -296,12 +194,11 @@ index 86b52b7..64e45dc 100644
  }
  
 """
+        self.assertEqual(git.output, expected)
 
-            self.assertEqual(git.output, expected)
-
-            git.do_stage('location.json')
-            git.do_diffstaged('')
-            expected = """diff --git a/location.json b/location.json
+        git.do_stage('location.json')
+        git.do_diffstaged('')
+        expected = """diff --git a/location.json b/location.json
 index 86b52b7..64e45dc 100644
 --- a/location.json
 +++ b/location.json
@@ -312,25 +209,22 @@ index 86b52b7..64e45dc 100644
  }
  
 """
-            self.assertEqual(git.output, expected)
-            reset_repo()
+        self.assertEqual(git.output, expected)
 
     def test_git_diffbranch(self):
-        reset_repo()
-        if test_clean_repo():
-            git = GitCmd()
-            git.do_branch('trial')
-            change_location_file("Git Crystal")
-            git.do_stage('location.json')
-            git.do_commit('Player in Git Crystal')
-            git.do_diffbranch('')
+        git = GitCmd()
+        git.do_branch('trial')
+        G.change_location_file("Git Crystal")
+        git.do_stage('location.json')
+        git.do_commit('Player in Git Crystal')
+        git.do_diffbranch('')
 
-            expected = "only " + "data,trial are legal branch names\n"
-            expected += "usage: diffbranch branch1 branch2\n"
-            self.assertEqual(git.output, expected)
+        expected = "only " + "data,trial are legal branch names\n"
+        expected += "usage: diffbranch branch1 branch2\n"
+        self.assertEqual(git.output, expected)
 
-            git.do_diffbranch('trial data')
-            expected = """diff --git a/location.json b/location.json
+        git.do_diffbranch('trial data')
+        expected = """diff --git a/location.json b/location.json
 index 86b52b7..64e45dc 100644
 --- a/location.json
 +++ b/location.json
@@ -341,64 +235,59 @@ index 86b52b7..64e45dc 100644
  }
  
 """
-            self.assertEqual(git.output, expected)
-        reset_repo()
-        command = ['git', '-C', repodir, 'branch','-D', 'trial']
+        self.assertEqual(git.output, expected)
+        command = [G.GIT, '-C', G.repodir, 'branch','-D', 'trial']
         process = cw.run_process(command)
 
     def test_no_conflict_recursive_merge(self):
-        reset_repo()
-        if test_clean_repo():
-            git = GitCmd()
-            git.do_merge('')
-            expected = "No branch names provided"
-            self.assertEqual(git.output, expected)
+        git = GitCmd()
+        git.do_merge('')
+        expected = "No branch names provided"
+        self.assertEqual(git.output, expected)
 
-            git.do_merge('octupus merge')
-            expected = "Git Crystals does not support merging mulitple branches"
-            self.assertEqual(git.output, expected)
+        git.do_merge('octupus merge')
+        expected = "Git Crystals does not support merging mulitple branches"
+        self.assertEqual(git.output, expected)
 
-            git.do_branch('trial')
-            git.do_checkout('trial')
-            change_location_file("Git Crystal")
-            git.do_stage('location.json')
-            git.do_commit('Player in Git Crystal')
-            git.do_checkout('data')
-            git.do_merge('trial')
+        git.do_branch('trial')
+        git.do_checkout('trial')
+        G.change_location_file("Git Crystal")
+        git.do_stage('location.json')
+        git.do_commit('Player in Git Crystal')
+        git.do_checkout('data')
+        git.do_merge('trial')
 
-            command = [G.GIT, '-C', repodir, 'branch','-D', 'trial']
-            process = cw.run_process(command)
+        command = [G.GIT, '-C', G.repodir, 'branch','-D', 'trial']
+        process = cw.run_process(command)
 
-            expected = """Merge made by the 'recursive' strategy.
+        expected = """Merge made by the 'recursive' strategy.
  location.json | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 """
-            self.assertEqual(git.output, expected)
+        self.assertEqual(git.output, expected)
 
     def test_merge_with_conflicts(self):
-        reset_repo()
-        if test_clean_repo():
-            git = GitCmd()
+        git = GitCmd()
 
-            git.do_branch('trial')
-            change_location_file("Git Crystal")
-            git.do_stage('location.json')
-            git.do_commit('Player in Git Crystal')
-            git.do_checkout('data')
-            change_location_file("Stalagmite Central")
-            git.do_stage('location.json')
-            git.do_merge('trial')
-            git.do_resolveleft('location.json')
-            git.do_resolveright('location.json')
-            git.do_stage('location.json')
-            git.do_commit('Merge Branch Trial')
-            git.do_status('') # Get status message after successful merge resolution.
+        git.do_branch('trial')
+        G.change_location_file("Git Crystal")
+        git.do_stage('location.json')
+        git.do_commit('Player in Git Crystal')
+        git.do_checkout('data')
+        G.change_location_file("Stalagmite Central")
+        git.do_stage('location.json')
+        git.do_merge('trial')
+        git.do_resolveleft('location.json')
+        git.do_resolveright('location.json')
+        git.do_stage('location.json')
+        git.do_commit('Merge Branch Trial')
+        git.do_status('') # Get status message after successful merge resolution.
 
-            command = [G.GIT, '-C', repodir, 'branch','-D', 'trial']
-            process = cw.run_process(command)
+        command = [G.GIT, '-C', G.repodir, 'branch','-D', 'trial']
+        process = cw.run_process(command)
 
-            expected = 'No changes since last commit\n'
-            self.assertEqual(git.output, expected)
+        expected = 'No changes since last commit\n'
+        self.assertEqual(git.output, expected)
 
 if __name__ == '__main__':
     unittest.main()

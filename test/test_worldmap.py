@@ -2,6 +2,7 @@
 
 from project.worldmap import WorldMap
 import unittest
+from collections import OrderedDict
 
 class Tests(unittest.TestCase):
 
@@ -19,15 +20,16 @@ class Tests(unittest.TestCase):
     def test_get_ground_items(self):
         world_map = WorldMap()
         ground_items = world_map.get_ground_items("Git Crystal")
-        expected = ["Intro Git Tutorial","Git Status Tutorial"]
-        self.assertListEqual(ground_items, expected)
+        inv_list = [("Git Status Tutorial", 1),("Intro Git Tutorial",1)]
+        expected = OrderedDict(inv_list)
+        self.assertDictEqual(ground_items, expected)
 
     def test_empty_ground_items(self):
         world_map = WorldMap()
         world_map.rooms.data['Mountain Gate'].pop('ground') # Simulate a room without ground key
         ground_items = world_map.get_ground_items("Mountain Gate")
-        expected = []
-        self.assertListEqual(ground_items, expected)
+        expected = OrderedDict()
+        self.assertDictEqual(ground_items, expected)
 
 if __name__ == '__main__':
     unittest.main()
