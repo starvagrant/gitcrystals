@@ -132,5 +132,28 @@ To your west is...
         expected_inventory = OrderedDict(inventory_list)
         self.assertEqual(actual_inventory, expected_inventory)
 
+    def test_do_checkoutfile(self):
+        game = GitCrystalsCmd()
+        game.do_north('')
+        game.do_checkoutfile('location.json')
+        expected = 'Mountain Gate'
+        self.assertEqual(game.player.location, expected)
+
+    def test_load_data(self):
+        game = GitCrystalsCmd()
+        G.change_location_file('Git Crystal')
+        game.load_data()
+        expected = 'Git Crystal'
+        self.assertEqual(game.player.location, expected)
+
+    def test_write_data(self):
+        game = GitCrystalsCmd()
+        G.change_location_file('Git Crystal')
+        game.load_data()
+        G.change_location_file('Mountain Gate')
+        game.write_data()
+        file_data = JsonData(G.repodir, "location")
+        self.assertEqual(file_data.data['location'], 'Git Crystal')
+
 if __name__ == '__main__':
     unittest.main()
