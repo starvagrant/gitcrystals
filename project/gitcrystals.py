@@ -23,6 +23,10 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.write_data()
         self.load_data()
 
+    def do_checkoutfile(self, args):
+        super().do_checkoutfile(args)
+        self.load_data()
+
     def create_character(self, char_name):
         json_files = []
         data_folder = self.repodir + '/' + char_name
