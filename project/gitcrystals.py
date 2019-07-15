@@ -19,6 +19,9 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.repodir = repodir
         self.load_data()
 
+    def postcmd(self, stop, line):
+        self.write_data()
+        self.load_data()
 
     def create_character(self, char_name):
         json_files = []
