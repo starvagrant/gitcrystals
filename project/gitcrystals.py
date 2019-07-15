@@ -22,6 +22,7 @@ class GitCrystalsCmd(gitcli.GitCmd):
     def postcmd(self, stop, line):
         self.write_data()
         self.load_data()
+        return stop
 
     def do_checkoutfile(self, args):
         super().do_checkoutfile(args)
