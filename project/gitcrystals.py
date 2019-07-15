@@ -17,18 +17,8 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.output = ''
         self.error = ''
         self.repodir = repodir
-        json_files = []
-        json_files.append(JsonData(repodir,"alive"))
-        json_files.append(JsonData(repodir,"location"))
-        json_files.append(JsonData(repodir,"inventory"))
-        json_files.append(JsonData(repodir,"status"))
-        self.player = Character(json_files)
-        self.world_map = WorldMap()
-        self.characters = OrderedDict()
-        self.characters['princess'] = self.create_character('princess')
-        self.characters['grandfather'] = self.create_character('grandfather')
-        self.characters['dragon'] = self.create_character('dragon')
-        self.characters['shopkeeper'] = self.create_character('shopkeeper')
+        self.load_data()
+
 
     def create_character(self, char_name):
         json_files = []
@@ -39,6 +29,33 @@ class GitCrystalsCmd(gitcli.GitCmd):
         json_files.append(JsonData(data_folder,"status"))
         json_files.append(JsonData(data_folder,"relationship"))
         return Character(json_files, char_name)
+
+    def load_data(self):
+        json_files = []
+        json_files.append(JsonData(self.repodir,"alive"))
+        json_files.append(JsonData(self.repodir,"location"))
+        json_files.append(JsonData(self.repodir,"inventory"))
+        json_files.append(JsonData(self.repodir,"status"))
+        self.player = Character(json_files)
+        self.world_map = WorldMap()
+        self.characters = OrderedDict()
+        self.characters['princess'] = self.create_character('princess')
+        self.characters['grandfather'] = self.create_character('grandfather')
+        self.characters['dragon'] = self.create_character('dragon')
+        self.characters['shopkeeper'] = self.create_character('shopkeeper')
+
+    def write_data(self):
+        self.player.js_alive.write()
+        self.player.js_location.write()
+        self.player.js_inventory.write()
+        self.player.js_status.write()
+        self.world_map.rooms.write()
+        for char in self.characters:
+            self.characters[char].js_alive.write()
+            self.characters[char].js_location.write()
+            self.characters[char].js_inventory.write()
+            self.characters[char].js_status.write()
+            self.characters[char].js_relationship.write()
 
     def display_location(self):
         output = ''
