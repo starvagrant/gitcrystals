@@ -2,15 +2,19 @@
 ## A Text Based Game Based on The git versional control program
 
 ## Project State:
-Project has reached it's 0.01, or proof of concept status. Code
-won't work if cloned because the repo doesn't contain the
+Project has reached it's 0.02, (0.0x for proof of concept releases)
+but won't work if cloned because the repo doesn't contain the
 necessary subrepository, which is sitting on my computer. Getting
 a full game setup is a goal of the 0.1 release.
 
-The 0.01 release contains all the code necessary to run git within
+The 0.01 release contained all the code necessary to run git within
 a command line program. This will allow for the implementation of
-a game to uses git for saving game data. I am now implementing
-the game.
+a game to uses git for saving game data. 
+
+The 0.02 release marks that game logic is sophisticated enough
+to allow player to use git within the game to acheive something
+impossible without it: one can now amass an arbitrarily high
+number of items.
 
 The 0.1 release will definitely work on Linux, whether it gets
 tested on Mac, and to the degree it works with Mac installed
@@ -22,13 +26,14 @@ expressed interests of real Windows users.
 I will start considering pull requests after the release of the 0.1
 version. That's when you'll actually be able to play the game on
 select systems, and that's when I'll work on implementing a test
-suite for other users and a determining a bug reporting process.
+suite for other users and determining a bug reporting process.
 
 ## Description
 
-The following contains a program, gitcrystals.py, the purpose of which is
-to be a text-based video game that uses git as its system for managing
-save data. This is to serve the following purposes.
+The following repo contains a program I call git crystals ('./app.py')
+the purpose of which is to be a text-based video game that uses 
+git as its system for managing save data. This is to serve the 
+following purposes.
 
 1. For beginning users of git, it provides a relatively simple way to
 practice using a version of git designed with beginners in mind. While
