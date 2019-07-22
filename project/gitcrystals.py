@@ -136,12 +136,12 @@ class GitCrystalsCmd(gitcli.GitCmd):
             if new_location != '':
                 self.player.location = new_location
                 self.player.js_location.data['location'] = new_location
-                self.player.js_location.write()
-                self.display_location()
+                self.output = "You are in " + self.player.location + '\n'
             else:
-                print("There's Nothing in that Direction")
+                self.output = "There's Nothing in that Direction"
         else:
-            print(args + " is not a valid direction name")
+            self.output = args + " is not a valid direction name"
+        self.display_output()
 
     def do_east(self, args):
         self.do_go('east')
@@ -167,9 +167,7 @@ class GitCrystalsCmd(gitcli.GitCmd):
                 self.player.js_inventory.data[args] = 1
             if ground_items[args] <= 0:
                 ground_items.pop(args)
-            self.player.js_inventory.write()
             self.world_map.set_ground_items(location, ground_items)
-            self.world_map.rooms.write()
             self.output += 'Added ' + args + ' to player inventory'
         else:
             self.output += 'No ' + args + ' in ' + location + '\n'
@@ -190,8 +188,6 @@ class GitCrystalsCmd(gitcli.GitCmd):
                 self.player.js_inventory.data.pop(args)
 
             self.world_map.set_ground_items(location, ground_items)
-            self.player.js_inventory.write()
-            self.world_map.rooms.write()
             self.output += "Dropped " + args + " in " + location + '\n'
         else:
             self.output += "You do not have " + args + "in your inventory" + '\n'

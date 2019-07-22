@@ -72,7 +72,9 @@ To your west is...
     def test_go(self):
         G.change_location_file("Mountain Gate")
         game = GitCrystalsCmd()
-        game.do_go('north')
+        line = 'go north'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
         expected_location = "Git Crystal"
         player_location = game.player.location
         json_file = JsonData(G.repodir,"location")
@@ -121,17 +123,30 @@ To your west is...
 
     def test_do_take(self):
         game = GitCrystalsCmd()
-        game.do_take('No Trespassing Sign')
+
+        line = 'take No Trespassing Sign'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+
         inventory_list = [("Basic Clothes",1),("Distress Note",1),("Git Gem",1),("No Trespassing Sign",1)]
         actual_inventory = game.player.js_inventory.data
         expected_inventory = OrderedDict(inventory_list)
         self.assertEqual(actual_inventory, expected_inventory)
-        game.do_drop('No Trespassing Sign')
+
+        line = 'drop No Trespassing Sign'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
 
     def test_do_drop(self):
         game = GitCrystalsCmd()
-        game.do_take('No Trespassing Sign')
-        game.do_drop('No Trespassing Sign')
+
+        line = 'take No Trespassing Sign'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+        line = 'drop No Trespassing Sign'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+
         actual_inventory = game.player.js_inventory.data
         inventory_list = [("Basic Clothes",1),("Distress Note",1),("Git Gem",1)]
         expected_inventory = OrderedDict(inventory_list)
