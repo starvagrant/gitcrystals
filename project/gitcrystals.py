@@ -110,6 +110,12 @@ class GitCrystalsCmd(gitcli.GitCmd):
             output = 'In ' + location + ' you see...\n' + characters_output
         return output
 
+    def display_inventory(self):
+        output = 'You have: \n'
+        for item in self.player.js_inventory.data:
+            output += str(self.player.js_inventory.data[item]) + ' of ' + item + '\n'
+        return output
+
     def display_output(self):
         print(self.output)
 
@@ -205,8 +211,10 @@ class GitCrystalsCmd(gitcli.GitCmd):
             self.output += self.display_ground()
         elif args.lower() == 'people':
             self.output += self.display_characters()
+        elif args.lower() == 'inventory':
+            self.output += self.display_inventory()
         else:
-            self.output += "Examples: 'look', 'look room', 'look ground', 'look people'"
+            self.output += "Examples: 'look', 'look room', 'look ground', 'look people, look inventory'"
 
         self.display_output()
 

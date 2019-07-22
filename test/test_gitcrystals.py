@@ -56,6 +56,11 @@ To your west is...
 
         G.change_location_file("Mountain Gate")
 
+    def test_display_inventory(self):
+        game = GitCrystalsCmd()
+        expected = "You have: \n1 of Basic Clothes\n1 of Distress Note\n1 of Git Gem\n"
+        self.assertEqual(game.display_inventory(), expected)
+
     def test_create_character(self):
         G.change_location_file("Mountain Gate")
         game = GitCrystalsCmd()
