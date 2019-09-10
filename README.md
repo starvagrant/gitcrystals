@@ -9,7 +9,7 @@ a full game setup is a goal of the 0.1 release.
 
 The 0.01 release contained all the code necessary to run git within
 a command line program. This will allow for the implementation of
-a game to uses git for saving game data. 
+a game to uses git for saving game data.
 
 The 0.02 release marks that game logic is sophisticated enough
 to allow player to use git within the game to acheive something
@@ -31,8 +31,8 @@ suite for other users and determining a bug reporting process.
 ## Description
 
 The following repo contains a program I call git crystals ('./app.py')
-the purpose of which is to be a text-based video game that uses 
-git as its system for managing save data. This is to serve the 
+the purpose of which is to be a text-based video game that uses
+git as its system for managing save data. This is to serve the
 following purposes.
 
 1. For beginning users of git, it provides a relatively simple way to
@@ -41,15 +41,15 @@ git internals are sound, the terminology and interface provided to an
 initial user is muddy and confusing. All commands in git are in english,
 not the "git"-ese that inhabits technical documentation like man pages.
 2. For current users of git, this should be a fun puzzle game with the
-unusual mechanic of having game information saved in a repository 
+unusual mechanic of having game information saved in a repository
 rather than a file. You will have to use git's ability to enable non-
 linear workflow to solve game problems and discover the game's multiple
 endings.
 
 ## Dependencies
 
-The program requires a relatively up-to-date python 3 interpreter with 
-standard library and a relatively update to date version of git installed 
+The program requires a relatively up-to-date python 3 interpreter with
+standard library and a relatively update to date version of git installed
 on your system. My current dev machine is a dual-booting OS-X 10.12/
 Ubuntu 18.04 system, and I'm developing this program for Linux first.
 As such, the program should work on any linux system with python 3.6+
