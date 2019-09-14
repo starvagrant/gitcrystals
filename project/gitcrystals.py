@@ -105,7 +105,7 @@ class GitCrystalsCmd(gitcli.GitCmd):
                 if self.characters[key].location == location:
                     characters_output += '    ' + self.characters[key].name + '\n'
         if characters_output == '':
-            output = 'There is no here but you\n'
+            output = 'There is no here but you.\n'
         else:
             output = 'In ' + location + ' you see...\n' + characters_output
         return output

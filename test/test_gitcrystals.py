@@ -46,7 +46,7 @@ To your west is...
         G.change_location_file("Mountain Gate")
 
         game = GitCrystalsCmd()
-        expected = 'There is no here but you\n'
+        expected = 'There is no here but you.\n'
         self.assertEqual(game.display_characters(), expected)
 
         G.change_location_file("Dragon's Lair")
@@ -93,9 +93,7 @@ To your north is... Git Crystal
 To your south is... 
 To your east is... 
 To your west is... 
-In Mountain Gate you see...
-    No Trespassing Sign
-There is no here but you
+There is no here but you.
 """
         game.do_look('')
         self.assertEqual(game.output, expected)
@@ -109,15 +107,7 @@ To your west is...
         game.do_look('room')
         self.assertEqual(game.output, expected)
 
-        expected = """In Mountain Gate you see...
-    No Trespassing Sign
-"""
-
-        game.do_look('ground')
-        self.assertEqual(game.output, expected)
-
-        expected = """There is no here but you
-"""
+        expected = """There is no here but you.\n"""
         game.do_look('people')
         self.assertEqual(game.output, expected)
 
