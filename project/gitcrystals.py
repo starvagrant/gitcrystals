@@ -155,6 +155,22 @@ class GitCrystalsCmd(gitcli.GitCmd):
     def do_south(self, args):
         self.do_go('south')
 
+    def do_search(self, args):
+        self.output = self.display_ground()
+        self.display_output()
+        location = self.player.location
+        if 'danger_search' in self.world_map.rooms.data[location]:
+            self.player.js_alive.data['alive'] = False
+            status = self.world_map.rooms.data[location]['danger_search']
+            self.player.js_status.data[status] = True
+            for char in self.characters:
+                if self.characters[char].js_location.data['location'] == location:
+                    self.characters[char].js_alive.data['alive'] = False
+                    self.characters[char].js_status.data[status] = True
+            return True
+        else:
+            return False
+
     def do_take(self, args):
         self.output = ''
         location = self.player.location
@@ -199,18 +215,15 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.output = ''
         if args == '':
             self.output += self.display_location()
-            self.output += self.display_ground()
             self.output += self.display_characters()
         elif args.lower() == 'room':
             self.output += self.display_location()
-        elif args.lower() == 'ground':
-            self.output += self.display_ground()
         elif args.lower() == 'people':
             self.output += self.display_characters()
         elif args.lower() == 'inventory':
             self.output += self.display_inventory()
         else:
-            self.output += "Examples: 'look', 'look room', 'look ground', 'look people, look inventory'"
+            self.output += "Examples: 'look', 'look room', 'look people, look inventory'"
 
         self.display_output()
 
