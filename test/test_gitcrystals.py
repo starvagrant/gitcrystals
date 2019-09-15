@@ -142,6 +142,57 @@ To your west is...
         expected_inventory = OrderedDict(inventory_list)
         self.assertEqual(actual_inventory, expected_inventory)
 
+    def test_do_search(self):
+        game = GitCrystalsCmd()
+        game.do_search('')
+        expected = """In Mountain Gate you see...
+    No Trespassing Sign
+"""
+        self.assertEqual(expected, game.output)
+
+    def test_do_perilious_search(self):
+        G.change_location_file("Abandoned Treasury")
+        game = GitCrystalsCmd()
+        line = 'search'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+        expected = """In Abandoned Treasury you see...
+    Charcoal
+    Treasure Chest Key
+"""
+        output = game.output
+        alive = game.player.js_alive.data['alive']
+        game.do_checkoutfile('alive.json')
+        game.do_checkoutfile('location.json')
+
+        self.assertEqual(expected, output)
+        self.assertFalse(alive)
+
+    def test_do_perilious_search_with_others(self):
+        G.change_location_file("Abandoned Treasury")
+        G.change_character_info('princess', 'location', 'Abandoned Treasury')
+        game = GitCrystalsCmd()
+
+        line = 'search'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+
+        output = game.output
+        alive = game.player.js_alive.data['alive']
+        princess_alive = game.characters['princess'].js_alive.data['alive']
+
+        expected = """In Abandoned Treasury you see...
+    Charcoal
+    Treasure Chest Key\n"""
+
+        game.do_checkoutfile('alive.json')
+        game.do_checkoutfile('location.json')
+        game.do_checkoutfile('princess/location.json')
+
+        self.assertEqual(expected, output)
+        self.assertFalse(alive)
+        self.assertFalse(princess_alive)
+
     def test_do_checkoutfile(self):
         game = GitCrystalsCmd()
         game.do_north('')
