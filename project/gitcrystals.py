@@ -25,8 +25,34 @@ class GitCrystalsCmd(gitcli.GitCmd):
         return stop
 
     def do_checkoutfile(self, args):
-        super().do_checkoutfile(args)
+        player_is_alive = super().do_checkoutfile(args)
         self.load_data()
+        if not player_is_alive:
+            return True
+
+    def do_checkout(self, args):
+        player_is_alive = super().do_checkout(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
+
+    def do_merge(self, args):
+        player_is_alive = super().do_merge(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
+
+    def do_resolveleft(self, args):
+        player_is_alive = super().do_resolveleft(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
+
+    def do_resolveright(self, args):
+        player_is_alive = super().do_resolveright(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
 
     def create_character(self, char_name):
         json_files = []

@@ -4,6 +4,7 @@ import cmd,re
 import subprocess
 import project.gitglobals as G
 import project.command_wrapper as cw
+from project.jsondata import JsonData
 
 class GitCmd(cmd.Cmd):
 
@@ -12,6 +13,14 @@ class GitCmd(cmd.Cmd):
         self.output = ''
         self.error = ''
         self.repodir = repodir
+        self.alive = JsonData(repodir,"alive")
+
+    def is_player_alive(self):
+        self.alive.load()
+        if self.alive.data['alive'] == True:
+            return True
+        else:
+            return False
 
     def display_output(self):
         print(self.output)
@@ -99,12 +108,16 @@ class GitCmd(cmd.Cmd):
         self.output = process.stdout
         self.error = process.stderr
 
+        return self.is_player_alive()
+
     def do_checkoutfile(self, args):
         first_arg = args.split()[0]
         command = [G.GIT, '-C', self.repodir, 'checkout', '--',first_arg]
         process = cw.run_process(command)
         self.output = process.stdout
         self.error = process.stderr
+
+        return self.is_player_alive()
 
     def do_stage(self, args):
         first_arg = args.split()[0]
@@ -210,6 +223,8 @@ class GitCmd(cmd.Cmd):
 
         self.display_output()
 
+        return self.is_player_alive()
+
     def do_resolveleft(self,args):
         args.split()
         for arg in args:
@@ -219,6 +234,8 @@ class GitCmd(cmd.Cmd):
             self.err = process.stderr
             self.display_output()
 
+        return self.is_player_alive()
+
     def do_resolveright(self,args):
         args.split()
         for arg in args:
@@ -227,7 +244,9 @@ class GitCmd(cmd.Cmd):
             self.output = process.stdout
             self.err = process.stderr
             self.display_output()
-    
+
+        return self.is_player_alive()
+
 if __name__ == '__main__':
     game = GitCrystalsCmd()
     game.display_location()
