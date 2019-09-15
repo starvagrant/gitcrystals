@@ -1,5 +1,9 @@
 ## Ideas for Refactoring Git Project
 
+1. Handle when git errors out. Currently, git errors out
+silently, which is bad, for instance when a checkout
+silently fails.
+
 3. Simplify end user syntax with wrapper functions. To avoid
 a small amount of work, I gave names to every function, instead
 of parsing spaces, and ended up with commands like listbranches
