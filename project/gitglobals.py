@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import project.command_wrapper as cw
+import os
 from project.jsondata import JsonData
 
 # Constants
@@ -61,4 +62,9 @@ def test_clean_repo():
 def change_location_file(new_location):
     json_file = JsonData(repodir,"location")
     json_file.data['location'] = new_location
+    json_file.write()
+
+def change_character_info(character, attribute, value):
+    json_file = JsonData(repodir + os.sep + character, attribute)
+    json_file.data[attribute] = value
     json_file.write()

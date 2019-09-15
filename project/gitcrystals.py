@@ -105,9 +105,15 @@ class GitCrystalsCmd(gitcli.GitCmd):
                 if self.characters[key].location == location:
                     characters_output += '    ' + self.characters[key].name + '\n'
         if characters_output == '':
-            output = 'There is no here but you\n'
+            output = 'There is no here but you.\n'
         else:
             output = 'In ' + location + ' you see...\n' + characters_output
+        return output
+
+    def display_inventory(self):
+        output = 'You have: \n'
+        for item in self.player.js_inventory.data:
+            output += str(self.player.js_inventory.data[item]) + ' of ' + item + '\n'
         return output
 
     def display_output(self):
@@ -130,12 +136,12 @@ class GitCrystalsCmd(gitcli.GitCmd):
             if new_location != '':
                 self.player.location = new_location
                 self.player.js_location.data['location'] = new_location
-                self.player.js_location.write()
-                self.display_location()
+                self.output = "You are in " + self.player.location + '\n'
             else:
-                print("There's Nothing in that Direction")
+                self.output = "There's Nothing in that Direction"
         else:
-            print(args + " is not a valid direction name")
+            self.output = args + " is not a valid direction name"
+        self.display_output()
 
     def do_east(self, args):
         self.do_go('east')
@@ -149,6 +155,22 @@ class GitCrystalsCmd(gitcli.GitCmd):
     def do_south(self, args):
         self.do_go('south')
 
+    def do_search(self, args):
+        self.output = self.display_ground()
+        self.display_output()
+        location = self.player.location
+        if 'danger_search' in self.world_map.rooms.data[location]:
+            self.player.js_alive.data['alive'] = False
+            status = self.world_map.rooms.data[location]['danger_search']
+            self.player.js_status.data[status] = True
+            for char in self.characters:
+                if self.characters[char].js_location.data['location'] == location:
+                    self.characters[char].js_alive.data['alive'] = False
+                    self.characters[char].js_status.data[status] = True
+            return True
+        else:
+            return False
+
     def do_take(self, args):
         self.output = ''
         location = self.player.location
@@ -161,9 +183,7 @@ class GitCrystalsCmd(gitcli.GitCmd):
                 self.player.js_inventory.data[args] = 1
             if ground_items[args] <= 0:
                 ground_items.pop(args)
-            self.player.js_inventory.write()
             self.world_map.set_ground_items(location, ground_items)
-            self.world_map.rooms.write()
             self.output += 'Added ' + args + ' to player inventory'
         else:
             self.output += 'No ' + args + ' in ' + location + '\n'
@@ -184,8 +204,6 @@ class GitCrystalsCmd(gitcli.GitCmd):
                 self.player.js_inventory.data.pop(args)
 
             self.world_map.set_ground_items(location, ground_items)
-            self.player.js_inventory.write()
-            self.world_map.rooms.write()
             self.output += "Dropped " + args + " in " + location + '\n'
         else:
             self.output += "You do not have " + args + "in your inventory" + '\n'
@@ -197,16 +215,15 @@ class GitCrystalsCmd(gitcli.GitCmd):
         self.output = ''
         if args == '':
             self.output += self.display_location()
-            self.output += self.display_ground()
             self.output += self.display_characters()
         elif args.lower() == 'room':
             self.output += self.display_location()
-        elif args.lower() == 'ground':
-            self.output += self.display_ground()
         elif args.lower() == 'people':
             self.output += self.display_characters()
+        elif args.lower() == 'inventory':
+            self.output += self.display_inventory()
         else:
-            self.output += "Examples: 'look', 'look room', 'look ground', 'look people'"
+            self.output += "Examples: 'look', 'look room', 'look people, look inventory'"
 
         self.display_output()
 

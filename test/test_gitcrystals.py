@@ -46,7 +46,7 @@ To your west is...
         G.change_location_file("Mountain Gate")
 
         game = GitCrystalsCmd()
-        expected = 'There is no here but you\n'
+        expected = 'There is no here but you.\n'
         self.assertEqual(game.display_characters(), expected)
 
         G.change_location_file("Dragon's Lair")
@@ -55,6 +55,11 @@ To your west is...
         self.assertEqual(game.display_characters(), expected)
 
         G.change_location_file("Mountain Gate")
+
+    def test_display_inventory(self):
+        game = GitCrystalsCmd()
+        expected = "You have: \n1 of Basic Clothes\n1 of Distress Note\n1 of Git Gem\n"
+        self.assertEqual(game.display_inventory(), expected)
 
     def test_create_character(self):
         G.change_location_file("Mountain Gate")
@@ -67,7 +72,9 @@ To your west is...
     def test_go(self):
         G.change_location_file("Mountain Gate")
         game = GitCrystalsCmd()
-        game.do_go('north')
+        line = 'go north'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
         expected_location = "Git Crystal"
         player_location = game.player.location
         json_file = JsonData(G.repodir,"location")
@@ -86,9 +93,7 @@ To your north is... Git Crystal
 To your south is... 
 To your east is... 
 To your west is... 
-In Mountain Gate you see...
-    No Trespassing Sign
-There is no here but you
+There is no here but you.
 """
         game.do_look('')
         self.assertEqual(game.output, expected)
@@ -102,35 +107,91 @@ To your west is...
         game.do_look('room')
         self.assertEqual(game.output, expected)
 
-        expected = """In Mountain Gate you see...
-    No Trespassing Sign
-"""
-
-        game.do_look('ground')
-        self.assertEqual(game.output, expected)
-
-        expected = """There is no here but you
-"""
+        expected = """There is no here but you.\n"""
         game.do_look('people')
         self.assertEqual(game.output, expected)
 
     def test_do_take(self):
         game = GitCrystalsCmd()
-        game.do_take('No Trespassing Sign')
+
+        line = 'take No Trespassing Sign'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+
         inventory_list = [("Basic Clothes",1),("Distress Note",1),("Git Gem",1),("No Trespassing Sign",1)]
         actual_inventory = game.player.js_inventory.data
         expected_inventory = OrderedDict(inventory_list)
         self.assertEqual(actual_inventory, expected_inventory)
-        game.do_drop('No Trespassing Sign')
+
+        line = 'drop No Trespassing Sign'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
 
     def test_do_drop(self):
         game = GitCrystalsCmd()
-        game.do_take('No Trespassing Sign')
-        game.do_drop('No Trespassing Sign')
+
+        line = 'take No Trespassing Sign'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+        line = 'drop No Trespassing Sign'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+
         actual_inventory = game.player.js_inventory.data
         inventory_list = [("Basic Clothes",1),("Distress Note",1),("Git Gem",1)]
         expected_inventory = OrderedDict(inventory_list)
         self.assertEqual(actual_inventory, expected_inventory)
+
+    def test_do_search(self):
+        game = GitCrystalsCmd()
+        game.do_search('')
+        expected = """In Mountain Gate you see...
+    No Trespassing Sign
+"""
+        self.assertEqual(expected, game.output)
+
+    def test_do_perilious_search(self):
+        G.change_location_file("Abandoned Treasury")
+        game = GitCrystalsCmd()
+        line = 'search'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+        expected = """In Abandoned Treasury you see...
+    Charcoal
+    Treasure Chest Key
+"""
+        output = game.output
+        alive = game.player.js_alive.data['alive']
+        game.do_checkoutfile('alive.json')
+        game.do_checkoutfile('location.json')
+
+        self.assertEqual(expected, output)
+        self.assertFalse(alive)
+
+    def test_do_perilious_search_with_others(self):
+        G.change_location_file("Abandoned Treasury")
+        G.change_character_info('princess', 'location', 'Abandoned Treasury')
+        game = GitCrystalsCmd()
+
+        line = 'search'
+        stop = game.onecmd(line)
+        game.postcmd(stop, line)
+
+        output = game.output
+        alive = game.player.js_alive.data['alive']
+        princess_alive = game.characters['princess'].js_alive.data['alive']
+
+        expected = """In Abandoned Treasury you see...
+    Charcoal
+    Treasure Chest Key\n"""
+
+        game.do_checkoutfile('alive.json')
+        game.do_checkoutfile('location.json')
+        game.do_checkoutfile('princess/location.json')
+
+        self.assertEqual(expected, output)
+        self.assertFalse(alive)
+        self.assertFalse(princess_alive)
 
     def test_do_checkoutfile(self):
         game = GitCrystalsCmd()
