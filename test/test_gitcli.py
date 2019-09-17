@@ -30,6 +30,25 @@ class Tests(unittest.TestCase):
         git.alive.write()
         self.assertTrue(git.is_player_alive())
 
+    def test_loop_exit(self):
+        git = GitCmd()
+        git.alive.data['alive'] = True
+        git.alive.write()
+
+        git_loop_exits1 = git.do_checkoutfile('alive.json')
+        git_loop_exits2 = git.do_checkout('data')
+        git_loop_exits3 = git.do_checkoutforce('data')
+        git_loop_exits4 = git.do_merge('data')
+        git_loop_exits5 = git.do_resolveleft('alive.json')
+        git_loop_exits6 = git.do_resolveleft('alive.json')
+
+        self.assertTrue(git_loop_exits1)
+        self.assertTrue(git_loop_exits2)
+        self.assertTrue(git_loop_exits3)
+        self.assertTrue(git_loop_exits4)
+        self.assertTrue(git_loop_exits5)
+        self.assertTrue(git_loop_exits6)
+
     def test_do_revlist(self):
         git = GitCmd()
         git.do_revlist('')
