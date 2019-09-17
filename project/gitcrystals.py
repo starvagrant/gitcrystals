@@ -37,6 +37,12 @@ class GitCrystalsCmd(gitcli.GitCmd):
         if not player_is_alive:
             return True
 
+    def do_checkoutforce(self, args):
+        player_is_alive = super().do_checkoutforce(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
+
     def do_merge(self, args):
         player_is_alive = super().do_merge(args)
         self.load_data()

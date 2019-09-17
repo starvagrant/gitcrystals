@@ -120,6 +120,15 @@ class GitCmd(cmd.Cmd):
 
         return self.is_player_alive()
 
+    def do_checkoutforce(self,args):
+        first_arg = args.split()[0]
+        command = [G.GIT, '-C', self.repodir, 'checkout', '-f',first_arg]
+        process = cw.run_process(command)
+        self.output = process.stdout
+        self.error = process.stderr
+
+        return self.is_player_alive()
+
     def do_stage(self, args):
         first_arg = args.split()[0]
         if first_arg.endswith('.json'):
