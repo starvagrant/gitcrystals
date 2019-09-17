@@ -14,7 +14,7 @@ class GitCrystalsCmd(gitcli.GitCmd):
     prompt = '\n\033[32mGit Crystals>\033[0m'
 
     def __init__(self, repodir="game-repo"):
-        super().__init__()
+        super().__init__(repodir)
         self.output = ''
         self.error = ''
         self.repodir = repodir
@@ -78,7 +78,7 @@ class GitCrystalsCmd(gitcli.GitCmd):
         json_files.append(JsonData(self.repodir,"inventory"))
         json_files.append(JsonData(self.repodir,"status"))
         self.player = Character(json_files)
-        self.world_map = WorldMap()
+        self.world_map = WorldMap(self.repodir,"world_rooms")
         self.characters = OrderedDict()
         self.characters['princess'] = self.create_character('princess')
         self.characters['grandfather'] = self.create_character('grandfather')
