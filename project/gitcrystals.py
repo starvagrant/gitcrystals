@@ -11,9 +11,10 @@ from project.worldmap import WorldMap
 import project.gitcli as gitcli
 
 class GitCrystalsCmd(gitcli.GitCmd):
+    prompt = '\n\033[32mGit Crystals>\033[0m'
 
     def __init__(self, repodir="game-repo"):
-        super().__init__()
+        super().__init__(repodir)
         self.output = ''
         self.error = ''
         self.repodir = repodir
@@ -25,8 +26,40 @@ class GitCrystalsCmd(gitcli.GitCmd):
         return stop
 
     def do_checkoutfile(self, args):
-        super().do_checkoutfile(args)
+        player_is_alive = super().do_checkoutfile(args)
         self.load_data()
+        if not player_is_alive:
+            return True
+
+    def do_checkout(self, args):
+        player_is_alive = super().do_checkout(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
+
+    def do_checkoutforce(self, args):
+        player_is_alive = super().do_checkoutforce(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
+
+    def do_merge(self, args):
+        player_is_alive = super().do_merge(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
+
+    def do_resolveleft(self, args):
+        player_is_alive = super().do_resolveleft(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
+
+    def do_resolveright(self, args):
+        player_is_alive = super().do_resolveright(args)
+        self.load_data()
+        if not player_is_alive:
+            return True
 
     def create_character(self, char_name):
         json_files = []
@@ -45,7 +78,7 @@ class GitCrystalsCmd(gitcli.GitCmd):
         json_files.append(JsonData(self.repodir,"inventory"))
         json_files.append(JsonData(self.repodir,"status"))
         self.player = Character(json_files)
-        self.world_map = WorldMap()
+        self.world_map = WorldMap(self.repodir,"world_rooms")
         self.characters = OrderedDict()
         self.characters['princess'] = self.create_character('princess')
         self.characters['grandfather'] = self.create_character('grandfather')

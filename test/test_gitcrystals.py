@@ -16,6 +16,27 @@ class Tests(unittest.TestCase):
         game = GitCrystalsCmd()
         self.assertTrue(game.do_quit(''))
 
+    def test_loop_exit(self):
+        # A do_* method exits when it returns True.
+        # Game loop should end when player is dead.
+        game = GitCrystalsCmd()
+        game.alive.data['alive'] = True
+        game.alive.write()
+
+        game_loop_exits1 = game.do_checkoutfile('alive.json')
+        game_loop_exits2 = game.do_checkout('data')
+        game_loop_exits3 = game.do_checkoutforce('data')
+        game_loop_exits4 = game.do_merge('data')
+        game_loop_exits5 = game.do_resolveleft('alive.json')
+        game_loop_exits6 = game.do_resolveright('alive.json')
+
+        self.assertFalse(game_loop_exits1)
+        self.assertFalse(game_loop_exits2)
+        self.assertFalse(game_loop_exits3)
+        self.assertFalse(game_loop_exits4)
+        self.assertFalse(game_loop_exits5)
+        self.assertFalse(game_loop_exits6)
+
     def test_display_location(self):
         game = GitCrystalsCmd()
         expected ="""You are in Mountain Gate
