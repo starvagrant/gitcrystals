@@ -7,6 +7,7 @@ import project.command_wrapper as cw
 from project.jsondata import JsonData
 
 class GitCmd(cmd.Cmd):
+    prompt = '\n\033[31m Git Mode>\033[0m '
 
     def __init__(self, repodir="game-repo"):
         super().__init__()

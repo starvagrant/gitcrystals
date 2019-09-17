@@ -11,6 +11,7 @@ from project.worldmap import WorldMap
 import project.gitcli as gitcli
 
 class GitCrystalsCmd(gitcli.GitCmd):
+    prompt = '\n\033[32mGit Crystals>\033[0m'
 
     def __init__(self, repodir="game-repo"):
         super().__init__()

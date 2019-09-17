@@ -32,6 +32,8 @@ while playing:
         alive_json.load()
         if alive_json.data['alive'] == False:
             print(death_message)
+        else:
+            print("Game exited from game loop while character alive...?")
     else:
         game = project.gitcli.GitCmd('game')
         print(git_intro)
@@ -39,6 +41,8 @@ while playing:
         alive_json.load()
         if alive_json.data['alive']:
             print(revive_message)
+        else:
+            print("Game exited from git loop while character dead...?")
 
     gameContinue = input('Continue Y/N?')
     if gameContinue.lower() == 'n':
