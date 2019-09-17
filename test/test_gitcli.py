@@ -108,6 +108,19 @@ class Tests(unittest.TestCase):
         expected = ''
         self.assertEqual(process.stdout, expected)
 
+    def test_checkout_force(self):
+        git = GitCmd()
+        with open(G.repodir + '/README.md', 'a') as f:
+            f.write("##Test Header")
+
+        git.do_checkoutforce('data')
+
+        command = [G.GIT, '-C', G.repodir, 'status','--short']
+        process = cw.run_process(command)
+
+        expected = ''
+        self.assertEqual(process.stdout, expected)
+
     def test_stage(self):
         git = GitCmd()
         G.change_location_file("Git Crystal")
