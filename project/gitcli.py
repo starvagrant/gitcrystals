@@ -14,7 +14,7 @@ class GitCmd(cmd.Cmd):
         self.output = ''
         self.error = ''
         self.repodir = repodir
-        self.alive = JsonData(repodir,"alive")
+        self.alive = JsonData(self.repodir,"alive")
 
     def is_player_alive(self):
         self.alive.load()
