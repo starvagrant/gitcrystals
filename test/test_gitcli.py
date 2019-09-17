@@ -20,6 +20,16 @@ class Tests(unittest.TestCase):
         git = GitCmd()
         self.assertTrue(git.do_quit(''))
 
+    def test_is_player_alive(self):
+        git = GitCmd()
+        git.alive.data['alive'] = False
+        git.alive.write()
+        self.assertFalse(git.is_player_alive())
+
+        git.alive.data['alive'] = True
+        git.alive.write()
+        self.assertTrue(git.is_player_alive())
+
     def test_do_revlist(self):
         git = GitCmd()
         git.do_revlist('')
